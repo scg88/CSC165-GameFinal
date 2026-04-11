@@ -48,9 +48,16 @@ public class MyGame extends VariableFrameRateGame
 	private ObjShape groundPlaneS, pyramidS;
 	private TextureImage doltx, planettx, planettx2, planettx3, bricktx, grasstx;
 	private Light light1, light2, light3, light4;
-	
-	private CameraOrbit3D orbitController;
 
+	// **** Chess like Game Pieces
+	// ****
+	private GameObject rookBlue, rookRed, kingRed, kingBlue, queenRed, queenBlue, 
+		knightRed, knightBlue, pawnRed, pawnBlue, bishopRed, bishopBlue;
+	private TextureImage rooktxRed, rooktxBlue, kingtxRed, kingtxBlue, queentxRed, 
+		queentxBlue, knighttxRed, knighttxBlue, pawntxRed, pawntxBlue, bishoptxRed, bishoptxBlue;
+	private ObjShape rookS, kingS, queenS, knightS, pawnS, bishopS;
+
+	private CameraOrbit3D orbitController;
 	private RotationController pyramidRotController;
 	private BobbingController pyramidBobController;
 	private BobbingController homeBobController;
@@ -81,6 +88,14 @@ public class MyGame extends VariableFrameRateGame
 		linxS = new Line(new Vector3f(0f,0f,0f), new Vector3f(3f,0f,0f));
 		linyS = new Line(new Vector3f(0f,0f,0f), new Vector3f(0f,3f,0f));
 		linzS = new Line(new Vector3f(0f,0f,0f), new Vector3f(0f,0f,-3f));
+
+		// Game Piece Shapes
+		rookS = new ImportedModel("RookPiece.obj");
+		kingS = new ImportedModel("KingPiece.obj");
+		queenS = new ImportedModel("QueenPiece.obj");
+		knightS = new ImportedModel("KnightPiece.obj");
+		pawnS = new ImportedModel("PawnPiece.obj");
+		bishopS = new ImportedModel("BishopPiece.obj");
 	}
 
 	@Override
@@ -92,6 +107,20 @@ public class MyGame extends VariableFrameRateGame
 		planettx3 = new TextureImage("PlanetText_04.jpg");          // Red planet texture
 		grasstx = new TextureImage("mud_cracked_dry_03.jpg");       // Desert texture sourced from Polyhaven
 		bricktx = new TextureImage("brick1.jpg");
+
+		// Game Textures
+		rooktxRed = new TextureImage("RedRookTxt.jpg"); // Texture for the rook piece
+		rooktxBlue = new TextureImage("BlueRookTxt.jpg");
+		kingtxRed = new TextureImage("RedKingTxt.jpg"); // Texture for the king piece
+		kingtxBlue = new TextureImage("BlueKingTxt.jpg");
+		queentxRed = new TextureImage("RedQueenTxt.jpg"); // Texture for the queen piece
+		queentxBlue = new TextureImage("BlueQueenTxt.jpg");
+		knighttxRed = new TextureImage("RedKnightTxt.jpg"); // Texture for the knight piece
+		knighttxBlue = new TextureImage("BlueKnightTxt.jpg");
+		pawntxRed = new TextureImage("RedPawnTxt.jpg"); // Texture for the pawn piece
+		pawntxBlue = new TextureImage("BluePawnTxt.jpg");
+		bishoptxRed = new TextureImage("RedBishopTxt.jpg"); // Texture for the bishop piece
+		bishoptxBlue = new TextureImage("BlueBishopTxt.jpg");
 	}
 
 	@Override
@@ -113,6 +142,78 @@ public class MyGame extends VariableFrameRateGame
 		initialScale = (new Matrix4f()).scaling(3.0f); 
 		avatar.setLocalScale(initialScale);
 		dol = avatar; // Alias from previous examples
+
+		// Build Red the Rook Piece
+    	rookRed = new GameObject(GameObject.root(), rookS, rooktxRed);
+		rookRed.setLocalTranslation((new Matrix4f()).translation(0f, 1.1f, -10f));
+    	rookRed.setLocalScale((new Matrix4f()).scaling(1.0f));
+    	rookRed.getRenderStates().hasLighting(true);
+
+		// Build Blue Rook Piece
+    	rookBlue = new GameObject(GameObject.root(), rookS, rooktxBlue);
+		rookBlue.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, -10f));
+    	rookBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
+    	rookBlue.getRenderStates().hasLighting(true);
+
+		// Build Red King Piece
+		kingRed = new GameObject(GameObject.root(), kingS, kingtxRed);
+		kingRed.setLocalTranslation((new Matrix4f()).translation(5f, 1.1f, -10f));
+		kingRed.setLocalScale((new Matrix4f()).scaling(1.0f));
+		kingRed.getRenderStates().hasLighting(true);
+
+		// Build Blue King Piece
+		kingBlue = new GameObject(GameObject.root(), kingS, kingtxBlue);
+		kingBlue.setLocalTranslation((new Matrix4f()).translation(7.5f, 1.1f, -10f));
+		kingBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
+		kingBlue.getRenderStates().hasLighting(true);
+
+		// Build Red Queen Piece
+		queenRed = new GameObject(GameObject.root(), queenS, queentxRed);
+		queenRed.setLocalTranslation((new Matrix4f()).translation(10f, 1.1f, -10f));
+		queenRed.setLocalScale((new Matrix4f()).scaling(1.0f));
+		queenRed.getRenderStates().hasLighting(true);
+
+		// Build Blue Queen Piece
+		queenBlue = new GameObject(GameObject.root(), queenS, queentxBlue);
+		queenBlue.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, -10f));
+		queenBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
+		queenBlue.getRenderStates().hasLighting(true);
+
+		// Build Red Knight Piece
+		knightRed = new GameObject(GameObject.root(), knightS, knighttxRed);
+		knightRed.setLocalTranslation((new Matrix4f()).translation(0f, 1.1f, -7.5f));
+		knightRed.setLocalScale((new Matrix4f()).scaling(1.0f));
+		knightRed.getRenderStates().hasLighting(true);
+
+		// Build Blue Knight Piece
+		knightBlue = new GameObject(GameObject.root(), knightS, knighttxBlue);
+		knightBlue.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, -7.5f));
+		knightBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
+		knightBlue.getRenderStates().hasLighting(true);
+
+		// Build Red Pawn Piece
+		pawnRed = new GameObject(GameObject.root(), pawnS, pawntxRed);
+		pawnRed.setLocalTranslation((new Matrix4f()).translation(5f, 0.6f, -7.5f));
+		pawnRed.setLocalScale((new Matrix4f()).scaling(1.0f));
+		pawnRed.getRenderStates().hasLighting(true);
+
+		// Build Blue Pawn Piece
+		pawnBlue = new GameObject(GameObject.root(), pawnS, pawntxBlue);
+		pawnBlue.setLocalTranslation((new Matrix4f()).translation(7.5f, 0.6f, -7.5f));
+		pawnBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
+		pawnBlue.getRenderStates().hasLighting(true);
+
+		// Build Red Bishop Piece
+		bishopRed = new GameObject(GameObject.root(), bishopS, bishoptxRed);
+		bishopRed.setLocalTranslation((new Matrix4f()).translation(10f, 1.1f, -7.5f));
+		bishopRed.setLocalScale((new Matrix4f()).scaling(1.0f));
+		bishopRed.getRenderStates().hasLighting(true);
+
+		// Build Blue Bishop Piece
+		bishopBlue = new GameObject(GameObject.root(), bishopS, bishoptxBlue);
+		bishopBlue.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, -7.5f));
+		bishopBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
+		bishopBlue.getRenderStates().hasLighting(true);
 
 		// Build ManualHome at the origin
     	home = new GameObject(GameObject.root(), homeS, bricktx);
@@ -177,6 +278,8 @@ public class MyGame extends VariableFrameRateGame
 		pyramidBobController = new BobbingController(engine, 3.5f, 0.2f);
 		engine.getSceneGraph().addNodeController(pyramidBobController);
 		// Do NOT .enable() yet!
+
+
 
 	}
 
