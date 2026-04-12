@@ -50,12 +50,23 @@ public class MyGame extends VariableFrameRateGame
 	private Light light1, light2, light3, light4;
 
 	// **** Chess like Game Pieces
-	// ****
+	// **** MILESTONE 1
 	private GameObject rookBlue, rookRed, kingRed, kingBlue, queenRed, queenBlue, 
 		knightRed, knightBlue, pawnRed, pawnBlue, bishopRed, bishopBlue;
 	private TextureImage rooktxRed, rooktxBlue, kingtxRed, kingtxBlue, queentxRed, 
 		queentxBlue, knighttxRed, knighttxBlue, pawntxRed, pawntxBlue, bishoptxRed, bishoptxBlue;
 	private ObjShape rookS, kingS, queenS, knightS, pawnS, bishopS;
+
+	// **** Skybox
+	// **** MILESTONE 1
+	private int gradientSky; // Blue gradient skybox made on GIMP
+
+	// **** Terrain map
+	// **** MILESTONE 1
+	private GameObject terr;
+	private ObjShape terrS;
+	private TextureImage hills, grass;
+
 
 	private CameraOrbit3D orbitController;
 	private RotationController pyramidRotController;
@@ -89,6 +100,9 @@ public class MyGame extends VariableFrameRateGame
 		linyS = new Line(new Vector3f(0f,0f,0f), new Vector3f(0f,3f,0f));
 		linzS = new Line(new Vector3f(0f,0f,0f), new Vector3f(0f,0f,-3f));
 
+		// Terrain shape
+		terrS = new TerrainPlane(512);
+
 		// Game Piece Shapes
 		rookS = new ImportedModel("RookPiece.obj");
 		kingS = new ImportedModel("KingPiece.obj");
@@ -96,6 +110,7 @@ public class MyGame extends VariableFrameRateGame
 		knightS = new ImportedModel("KnightPiece.obj");
 		pawnS = new ImportedModel("PawnPiece.obj");
 		bishopS = new ImportedModel("BishopPiece.obj");
+
 	}
 
 	@Override
@@ -109,6 +124,9 @@ public class MyGame extends VariableFrameRateGame
 		bricktx = new TextureImage("brick1.jpg");
 
 		// Game Textures
+		hills = new TextureImage("hills.jpg"); // This is your grayscale height map
+    	grass = new TextureImage("mud_cracked_dry_03.jpg"); // This is what the ground actually looks like
+		
 		rooktxRed = new TextureImage("RedRookTxt.jpg"); // Texture for the rook piece
 		rooktxBlue = new TextureImage("BlueRookTxt.jpg");
 		kingtxRed = new TextureImage("RedKingTxt.jpg"); // Texture for the king piece
@@ -121,6 +139,18 @@ public class MyGame extends VariableFrameRateGame
 		pawntxBlue = new TextureImage("BluePawnTxt.jpg");
 		bishoptxRed = new TextureImage("RedBishopTxt.jpg"); // Texture for the bishop piece
 		bishoptxBlue = new TextureImage("BlueBishopTxt.jpg");
+	}
+
+	@Override
+	public void loadSkyBoxes()
+	{
+    	// The string "gradientSky" tells TAGE to look for a folder with that name 
+    	// inside assets/skyboxes/
+    	gradientSky = (engine.getSceneGraph()).loadCubeMap("gradientSky");
+    
+    	// Set it as the active skybox and turn it on
+    	(engine.getSceneGraph()).setActiveSkyBoxTexture(gradientSky);
+    	(engine.getSceneGraph()).setSkyBoxEnabled(true);
 	}
 
 	@Override
@@ -142,6 +172,18 @@ public class MyGame extends VariableFrameRateGame
 		initialScale = (new Matrix4f()).scaling(3.0f); 
 		avatar.setLocalScale(initialScale);
 		dol = avatar; // Alias from previous examples
+
+		// Build the Terrain
+		terr = new GameObject(GameObject.root(), terrS, grass);
+    	terr.setLocalTranslation((new Matrix4f()).translation(0f, 0f, 0f));
+    	// The Y-scale (10.0f here) determines how TALL your mountains are.
+    	terr.setLocalScale((new Matrix4f()).scaling(50.0f, 10.0f, 50.0f));
+    	// This is the magic line that turns the flat plane into hills
+    	terr.setHeightMap(hills);
+    	// Tiling makes the grass texture repeat so it doesn't look blurry
+    	terr.getRenderStates().setTiling(1);
+    	terr.getRenderStates().setTileFactor(20);
+		terr.getRenderStates().hasLighting(true);
 
 		// Build Red the Rook Piece
     	rookRed = new GameObject(GameObject.root(), rookS, rooktxRed);
@@ -226,11 +268,13 @@ public class MyGame extends VariableFrameRateGame
     	home.getRenderStates().hasLighting(true);
 	
 		// Build the Ground Plane
+		/* 
 		ground = new GameObject(GameObject.root(), groundPlaneS, grasstx);
 		ground.setLocalLocation(new Vector3f(0, 0, 0));
 		ground.setLocalScale((new Matrix4f()).scaling(100.0f, 1.0f, 100.0f));
 		ground.getRenderStates().setTiling(1); // Set tiling to repeat texture (less blurry)
 		ground.getRenderStates().setTileFactor(20);
+		*/
 
 		// Metalic pyramid
 		pyramid1 = new GameObject(GameObject.root(), pyramidS, planettx);
@@ -525,16 +569,27 @@ public class MyGame extends VariableFrameRateGame
 		// MAIN GAME LOGIC - updates only happen if the game isn't won or lost yet
 		} else { 
 			Vector3f loc = avatar.getWorldLocation();
+
+			// 1. First, apply vertical movement (gravity/jumping)
+    		avatar.setLocalLocation(new Vector3f(loc.x, loc.y + vertVel, loc.z));
             
+			// 2. Get the actual height of the terrain at this specific (x, z)
+    		float groundHeight = terr.getHeight(loc.x, loc.z);
+
+			// 3. Define your offset (how high the dolphin sits above its origin)
+			float dolphinOffset = 0.8f;
+			float adjustedHeight = groundHeight + dolphinOffset;
+
+			// 3. TERRAIN SNAP LOGIC
+    		// We check if the avatar has fallen BELOW the ground height
             // JUMP LOGIC - Apply current vertical velocity to the avatar's position
-            avatar.setLocalLocation(new Vector3f(loc.x, loc.y + vertVel, loc.z));
-            if (avatar.getWorldLocation().y > 0.8f) {
+            if (avatar.getWorldLocation().y > adjustedHeight) {
                 // If in the air, gravity pulls the velocity down
                 vertVel -= 0.0002f * deltaTime; 
             } else {
                 // If we hit the ground, stop falling and snap to the floor
                 vertVel = 0.0f;
-                avatar.setLocalLocation(new Vector3f(loc.x, 0.8f, loc.z));
+                avatar.setLocalLocation(new Vector3f(loc.x, adjustedHeight, loc.z));
             }
 
 			// COLLISION DETECTION
@@ -637,6 +692,10 @@ public class MyGame extends VariableFrameRateGame
 			case KeyEvent.VK_5:
 				(engine.getRenderSystem().getViewport("LEFT").getCamera()).setLocation(new Vector3f(0,0,5));
 				break;
+			case KeyEvent.VK_8: // Press 8 to toggle skybox
+            	boolean isEnabled = (engine.getSceneGraph()).isSkyboxEnabled();
+            	(engine.getSceneGraph()).setSkyBoxEnabled(!isEnabled);
+            	break;
 		}
 		super.keyPressed(e);
 	}
