@@ -81,9 +81,9 @@ public class MyGame extends VariableFrameRateGame
 		homeS = new ManualHome();   // Custom shape for the home base
 
 		// Coordinate axes shapes (X, Y, Z)
-		linxS = new Line(new Vector3f(0f,0f,0f), new Vector3f(3f,0f,0f));
+		linxS = new Line(new Vector3f(0f,.1f,0f), new Vector3f(3f,.1f,0f));
 		linyS = new Line(new Vector3f(0f,0f,0f), new Vector3f(0f,3f,0f));
-		linzS = new Line(new Vector3f(0f,0f,0f), new Vector3f(0f,0f,-3f));
+		linzS = new Line(new Vector3f(0f,.1f,0f), new Vector3f(0f,.1f,-3f));
 
 		// Terrain shape
 		terrS = new TerrainPlane(512);
