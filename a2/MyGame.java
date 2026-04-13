@@ -108,7 +108,8 @@ public class MyGame extends VariableFrameRateGame
 		hills = new TextureImage("hills.jpg"); // This is your grayscale height map
 
 		// Desert texture from Polyhaven - https://polyhaven.com/a/mud_cracked_dry_03
-    	grass = new TextureImage("mud_cracked_dry_03.jpg"); // This is what the ground actually looks like
+    	//grass = new TextureImage("mud_cracked_dry_03.jpg"); // This is what the ground actually looks like
+		grass = new TextureImage("GroundTxt.jpg");
 		
 		rooktxRed = new TextureImage("RedRookTxt.jpg"); // Texture for the rook piece
 		rooktxBlue = new TextureImage("BlueRookTxt.jpg");
