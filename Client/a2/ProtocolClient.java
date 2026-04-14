@@ -91,7 +91,7 @@ public class ProtocolClient extends GameConnectionClient
 			}
 			
 			// Handle MOVE message
-			// Format: (move,remoteId,x,y,z)
+			// Format: (move,remoteId,x,y,z,pieceId)
 			if (messageTokens[0].compareTo("move") == 0)
 			{
 				// move a ghost avatar
@@ -103,8 +103,9 @@ public class ProtocolClient extends GameConnectionClient
 					Float.parseFloat(messageTokens[2]),
 					Float.parseFloat(messageTokens[3]),
 					Float.parseFloat(messageTokens[4]));
+				int pieceId = (int)Float.parseFloat(messageTokens[5]);
 				
-				ghostManager.updateGhostAvatar(ghostID, ghostPosition);
+				ghostManager.updateGhostAvatar(ghostID, ghostPosition, pieceId);
 	}	}	}
 	
 	// The initial message from the game client requesting to join the 
@@ -165,14 +166,15 @@ public class ProtocolClient extends GameConnectionClient
 	}	}
 	
 	// Informs the server that the local avatar has changed position.  
-	// Message Format: (move,localId,x,y,z) where x, y, and z represent the position.
+	// Message Format: (move,localId,x,y,z, pieceId) where x, y, and z represent the position and pieceId represents the piece to move.
 
-	public void sendMoveMessage(Vector3f position)
+	public void sendMoveMessage(Vector3f position, int pieceId)
 	{	try 
 		{	String message = new String("move," + id.toString());
 			message += "," + position.x();
 			message += "," + position.y();
 			message += "," + position.z();
+			message += "," + pieceId;
 			
 			sendPacket(message);
 		} catch (IOException e) 

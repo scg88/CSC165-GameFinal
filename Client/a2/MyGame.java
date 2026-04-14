@@ -30,6 +30,9 @@ public class MyGame extends VariableFrameRateGame
 {
 	private static Engine engine;
 	private GhostManager gm;
+	ChessPiece[] playerPieces = new ChessPiece[6];
+	ChessPiece[] opponentPieces = new ChessPiece[6];
+	int id = 0;
 
 	private boolean paused=false;
 	private boolean isRiding = true; // Start the game on the dolphin
@@ -76,6 +79,9 @@ public class MyGame extends VariableFrameRateGame
 	private RotationController pyramidRotController;
 	private BobbingController pyramidBobController;
 	private BobbingController homeBobController;
+	
+	private ChessPiece redRook, redPawn, redQueen, redKing, redBishop, redKnight;
+	private ChessPiece blueRook, bluePawn, blueQueen, blueKing, blueBishop, blueKnight;
 
 	public MyGame(String serverAddress, int serverPort, String protocol) 
 	{ 
@@ -179,7 +185,8 @@ public class MyGame extends VariableFrameRateGame
 		initialScale = (new Matrix4f()).scaling(3.0f); 
 		avatar.setLocalScale(initialScale);
 		dol = avatar; // Alias from previous examples
-
+		
+		
 		// Build the Terrain
 		terr = new GameObject(GameObject.root(), terrS, grass);
     	terr.setLocalTranslation((new Matrix4f()).translation(0f, 0f, 0f));
@@ -191,78 +198,175 @@ public class MyGame extends VariableFrameRateGame
     	terr.getRenderStates().setTileFactor(20);
 		terr.getRenderStates().hasLighting(true);
 
+		redRook = new ChessPiece(0, "Rook", rookS, rooktxRed);
+		playerPieces[0] = redRook;
+		redRook.setLocalTranslation((new Matrix4f()).translation(-2.5f, 1.1f, -12.5f));
+    	redRook.setLocalScale((new Matrix4f()).scaling(1.0f));
+    	redRook.getRenderStates().hasLighting(true);
+		avatar = redRook;
+		
 		// Build Red the Rook Piece
-    	rookRed = new GameObject(GameObject.root(), rookS, rooktxRed);
+    	/*
+		rookRed = new GameObject(GameObject.root(), rookS, rooktxRed);
 		rookRed.setLocalTranslation((new Matrix4f()).translation(-2.5f, 1.1f, -12.5f));
     	rookRed.setLocalScale((new Matrix4f()).scaling(1.0f));
     	rookRed.getRenderStates().hasLighting(true);
-
+		*/
+		
+		blueRook = new ChessPiece(0, "Rook", rookS, rooktxBlue);
+		opponentPieces[0] = blueRook;
+		blueRook.setLocalTranslation((new Matrix4f()).translation(-2.5f, 1.1f, 12.5f));
+    	blueRook.setLocalScale((new Matrix4f()).scaling(1.0f));
+    	blueRook.getRenderStates().hasLighting(true);
+		
+		/*
 		// Build Blue Rook Piece
     	rookBlue = new GameObject(GameObject.root(), rookS, rooktxBlue);
 		rookBlue.setLocalTranslation((new Matrix4f()).translation(-2.5f, 1.1f, 12.5f));
     	rookBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
     	rookBlue.getRenderStates().hasLighting(true);
-
+		*/
+		
 		// Build Red King Piece
+		/*
 		kingRed = new GameObject(GameObject.root(), kingS, kingtxRed);
 		kingRed.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, -12.5f));
 		kingRed.setLocalScale((new Matrix4f()).scaling(1.0f));
 		kingRed.getRenderStates().hasLighting(true);
-
+		*/
+		
+		redKing = new ChessPiece(1, "King", kingS, kingtxRed);
+		playerPieces[1] = redKing;
+		redKing.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, -12.5f));
+		redKing.setLocalScale((new Matrix4f()).scaling(1.0f));
+		redKing.getRenderStates().hasLighting(true);
+		
+		blueKing = new ChessPiece(1, "King", kingS, kingtxBlue);
+		opponentPieces[1] = blueKing;
+		blueKing.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, 12.5f));
+		blueKing.setLocalScale((new Matrix4f()).scaling(1.0f));
+		blueKing.getRenderStates().hasLighting(true);
+		
 		// Build Blue King Piece
+		/*
 		kingBlue = new GameObject(GameObject.root(), kingS, kingtxBlue);
 		kingBlue.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, 12.5f));
 		kingBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
 		kingBlue.getRenderStates().hasLighting(true);
+		*/
+		
+		redQueen = new ChessPiece(2, "Queen", queenS, queentxRed);
+		playerPieces[2] = redQueen;
+		redQueen.setLocalTranslation((new Matrix4f()).translation(7.5f, 1.1f, -12.5f));
+		redQueen.setLocalScale((new Matrix4f()).scaling(1.0f));
+		redQueen.getRenderStates().hasLighting(true);
 
 		// Build Red Queen Piece
+		/*
 		queenRed = new GameObject(GameObject.root(), queenS, queentxRed);
 		queenRed.setLocalTranslation((new Matrix4f()).translation(7.5f, 1.1f, -12.5f));
 		queenRed.setLocalScale((new Matrix4f()).scaling(1.0f));
 		queenRed.getRenderStates().hasLighting(true);
-
+		*/
+		
+		blueQueen = new ChessPiece(2, "Queen", queenS, queentxBlue);
+		opponentPieces[2] = blueQueen;
+		blueQueen.setLocalTranslation((new Matrix4f()).translation(7.5f, 1.1f, 12.5f));
+		blueQueen.setLocalScale((new Matrix4f()).scaling(1.0f));
+		blueQueen.getRenderStates().hasLighting(true);
+		
 		// Build Blue Queen Piece
+		/*
 		queenBlue = new GameObject(GameObject.root(), queenS, queentxBlue);
 		queenBlue.setLocalTranslation((new Matrix4f()).translation(7.5f, 1.1f, 12.5f));
 		queenBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
 		queenBlue.getRenderStates().hasLighting(true);
+		*/
+		
+		redKnight = new ChessPiece(3, "Knight", knightS, knighttxRed);
+		playerPieces[3] = redKnight;
+		redKnight.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, -12.5f));
+		redKnight.setLocalScale((new Matrix4f()).scaling(1.0f));
+		redKnight.getRenderStates().hasLighting(true);
 
 		// Build Red Knight Piece
+		/*
 		knightRed = new GameObject(GameObject.root(), knightS, knighttxRed);
 		knightRed.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, -12.5f));
 		knightRed.setLocalScale((new Matrix4f()).scaling(1.0f));
 		knightRed.getRenderStates().hasLighting(true);
-
+		*/
+		
+		blueKnight = new ChessPiece(3, "Knight", knightS, knighttxBlue);
+		opponentPieces[3] = blueKnight;
+		blueKnight.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, 12.5f));
+		blueKnight.setLocalScale((new Matrix4f()).scaling(1.0f));
+		blueKnight.getRenderStates().hasLighting(true);
+		
 		// Build Blue Knight Piece
+		/*
 		knightBlue = new GameObject(GameObject.root(), knightS, knighttxBlue);
 		knightBlue.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, 12.5f));
 		knightBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
 		knightBlue.getRenderStates().hasLighting(true);
+		*/
+		
+		redPawn = new ChessPiece(4, "Pawn", pawnS, pawntxRed);
+		playerPieces[4] = redPawn;
+		redPawn.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0.6f, -12.5f));
+		redPawn.setLocalScale((new Matrix4f()).scaling(1.0f));
+		redPawn.getRenderStates().hasLighting(true);
 
 		// Build Red Pawn Piece
+		/*
 		pawnRed = new GameObject(GameObject.root(), pawnS, pawntxRed);
 		pawnRed.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0.6f, -12.5f));
 		pawnRed.setLocalScale((new Matrix4f()).scaling(1.0f));
 		pawnRed.getRenderStates().hasLighting(true);
-
+		*/
+		
+		bluePawn = new ChessPiece(4, "Pawn", pawnS, pawntxBlue);
+		opponentPieces[4] = bluePawn;
+		bluePawn.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0.6f, 12.5f));
+		bluePawn.setLocalScale((new Matrix4f()).scaling(1.0f));
+		bluePawn.getRenderStates().hasLighting(true);
+		
 		// Build Blue Pawn Piece
+		/*
 		pawnBlue = new GameObject(GameObject.root(), pawnS, pawntxBlue);
 		pawnBlue.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0.6f, 12.5f));
 		pawnBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
 		pawnBlue.getRenderStates().hasLighting(true);
+		*/
+		
+		redBishop = new ChessPiece(5, "Bishop", bishopS, bishoptxRed);
+		playerPieces[5] = redBishop;
+		redBishop.setLocalTranslation((new Matrix4f()).translation(-7.5f, 1.1f, -12.5f));
+		redBishop.setLocalScale((new Matrix4f()).scaling(1.0f));
+		redBishop.getRenderStates().hasLighting(true);
 
 		// Build Red Bishop Piece
+		/*
 		bishopRed = new GameObject(GameObject.root(), bishopS, bishoptxRed);
 		bishopRed.setLocalTranslation((new Matrix4f()).translation(-7.5f, 1.1f, -12.5f));
 		bishopRed.setLocalScale((new Matrix4f()).scaling(1.0f));
 		bishopRed.getRenderStates().hasLighting(true);
-
+		*/
+		
+		blueBishop = new ChessPiece(5, "Bishop", bishopS, bishoptxBlue);
+		opponentPieces[5] = blueBishop;
+		blueBishop.setLocalTranslation((new Matrix4f()).translation(-7.55f, 1.1f, 12.5f));
+		blueBishop.setLocalScale((new Matrix4f()).scaling(1.0f));
+		blueBishop.getRenderStates().hasLighting(true);
+		
 		// Build Blue Bishop Piece
+		/*
 		bishopBlue = new GameObject(GameObject.root(), bishopS, bishoptxBlue);
 		bishopBlue.setLocalTranslation((new Matrix4f()).translation(-7.55f, 1.1f, 12.5f));
 		bishopBlue.setLocalScale((new Matrix4f()).scaling(1.0f));
 		bishopBlue.getRenderStates().hasLighting(true);
-
+		*/
+		
 		// Build ManualHome (now at edge of map)
     	home = new GameObject(GameObject.root(), homeS, bricktx);
     	Matrix4f homeTrans = (new Matrix4f()).translation(-50f, -5f, 50f);
@@ -484,6 +588,9 @@ public class MyGame extends VariableFrameRateGame
 	public TextureImage getGhostTexture() { return ghostT; }
 	public GhostManager getGhostManager() { return gm; }
 
+	public ChessPiece getOpponentPiece(int id) {return opponentPieces[id];}
+	public int getPieceId() {return id;}
+
 	@Override
 	public void update()
 	{	
@@ -499,7 +606,7 @@ public class MyGame extends VariableFrameRateGame
 
 		// ---A2 REQUIREMENT: Update the Orbit Camera ---
     	// This must happen every frame so the camera follows the avatar
-    	orbitController.updateCameraPosition();
+    	orbitController.updateCameraPosition(avatar);
 		
 		processNetworking((float)elapsTime);
 	
@@ -619,6 +726,10 @@ public class MyGame extends VariableFrameRateGame
             	boolean isEnabled = (engine.getSceneGraph()).isSkyboxEnabled();
             	(engine.getSceneGraph()).setSkyBoxEnabled(!isEnabled);
             	break;
+			case KeyEvent.VK_0:
+				if (id == 5) {id = 0;}
+				else {id++;}
+				avatar = playerPieces[id];
 		}
 		super.keyPressed(e);
 	}

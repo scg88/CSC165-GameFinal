@@ -18,7 +18,7 @@ import java.lang.Math;
 */
 
 public class CameraOrbit3D {
-    private Engine engine;
+	private Engine engine;
     private Camera camera;
     private GameObject avatar;     // the target object the camera looks at
     private float cameraAzimuth;   // rotation around target Y axis (degrees)
@@ -34,7 +34,7 @@ public class CameraOrbit3D {
         cameraRadius = 3.5f;      // Default zoom distance
         
         setupInputs(gpName);
-        updateCameraPosition();
+        updateCameraPosition(avatar);
     }
 
     private void setupInputs(String gp) {
@@ -62,7 +62,8 @@ public class CameraOrbit3D {
         }
     }
 
-    public void updateCameraPosition() {
+    public void updateCameraPosition(GameObject av) {
+		avatar = av;
         Vector3f avatarRot = avatar.getWorldForwardVector();
         double avatarAngle = Math.toDegrees((double) avatarRot.angleSigned(
             new Vector3f(0, 0, -1), new Vector3f(0, 1, 0)));
@@ -89,7 +90,7 @@ public class CameraOrbit3D {
             float rotAmount = (event.getValue() < -0.2f) ? -0.5f : (event.getValue() > 0.2f ? 0.5f : 0.0f);
             cameraAzimuth += rotAmount;
             cameraAzimuth %= 360;
-            updateCameraPosition();
+            updateCameraPosition(avatar);
         }
     }
 
@@ -99,7 +100,7 @@ public class CameraOrbit3D {
             cameraElevation += elvAmount;
             // Bound elevation to prevent camera flipping at the poles (90 degrees)
             cameraElevation = Math.max(5.0f, Math.min(70.0f, cameraElevation));
-            updateCameraPosition();
+            updateCameraPosition(avatar);
         }
     }
 
@@ -108,7 +109,7 @@ public class CameraOrbit3D {
             float zoomAmount = (event.getValue() < -0.2f) ? -0.01f : (event.getValue() > 0.2f ? 0.01f : 0.0f);
             cameraRadius += zoomAmount;
             cameraRadius = Math.max(0.5f, Math.min(10.0f, cameraRadius)); // Min/Max zoom
-            updateCameraPosition();
+            updateCameraPosition(avatar);
         }
     }
 

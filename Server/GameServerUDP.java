@@ -61,11 +61,12 @@ public class GameServerUDP extends GameConnectionServer<UUID>
 			}
 			
 			// MOVE --- Case where server receives a move message
-			// Received Message Format: (move,localId,x,y,z)
+			// Received Message Format: (move,localId,x,y,z,pieceID)
 			if(messageTokens[0].compareTo("move") == 0)
 			{	UUID clientID = UUID.fromString(messageTokens[1]);
 				String[] pos = {messageTokens[2], messageTokens[3], messageTokens[4]};
-				sendMoveMessages(clientID, pos);
+				String pieceID = messageTokens[5];
+				sendMoveMessages(clientID, pos, pieceID);
 	}	}	}
 
 	// Informs the client who just requested to join the server if their if their 
@@ -156,12 +157,13 @@ public class GameServerUDP extends GameConnectionServer<UUID>
 	// connected to the server when it receives a MOVE message from the remote client.   
 	// Message Format: (move,remoteId,x,y,z) where x, y, and z represent the position.
 
-	public void sendMoveMessages(UUID clientID, String[] position)
+	public void sendMoveMessages(UUID clientID, String[] position, String pieceID)
 	{	try 
 		{	String message = new String("move," + clientID.toString());
 			message += "," + position[0];
 			message += "," + position[1];
 			message += "," + position[2];
+			message += "," + pieceID;
 			forwardPacketToAll(message, clientID);
 		} 
 		catch (IOException e) 

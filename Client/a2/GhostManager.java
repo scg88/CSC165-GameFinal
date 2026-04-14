@@ -23,7 +23,7 @@ public class GhostManager
 	{	System.out.println("adding ghost with ID --> " + id);
 		ObjShape s = game.getGhostShape();
 		TextureImage t = game.getGhostTexture();
-		GhostAvatar newAvatar = new GhostAvatar(id, s, t, position);
+		GhostAvatar newAvatar = new GhostAvatar(game, id, s, t, position);
 		Matrix4f initialScale = (new Matrix4f()).scaling(0.25f);
 		newAvatar.setLocalScale(initialScale);
 		ghostAvatars.add(newAvatar);
@@ -52,10 +52,10 @@ public class GhostManager
 		return null;
 	}
 	
-	public void updateGhostAvatar(UUID id, Vector3f position)
+	public void updateGhostAvatar(UUID id, Vector3f position, int pieceID)
 	{	GhostAvatar ghostAvatar = findAvatar(id);
 		if (ghostAvatar != null)
-		{	ghostAvatar.setPosition(position);
+		{	ghostAvatar.setPosition(position, pieceID);
 		}
 		else
 		{	System.out.println("tried to update ghost avatar position, but unable to find ghost in list");
