@@ -119,12 +119,12 @@ public class MyGame extends VariableFrameRateGame
 		terrS = new TerrainPlane(512);
 
 		// Game Piece Shapes
-		rookS = new ImportedModel("RookPiece.obj");
-		kingS = new ImportedModel("KingPiece.obj");
-		queenS = new ImportedModel("QueenPiece.obj");
-		knightS = new ImportedModel("KnightPiece.obj");
-		pawnS = new ImportedModel("PawnPiece.obj");
-		bishopS = new ImportedModel("BishopPiece.obj");
+		rookS = new ImportedModel("Rook_v2.obj");
+		kingS = new ImportedModel("King_v2.obj");
+		queenS = new ImportedModel("Queen_v2.obj");
+		knightS = new ImportedModel("Knight_v2.obj");
+		pawnS = new ImportedModel("Pawn_v2.obj");
+		bishopS = new ImportedModel("Bishop_v2.obj");
 
 	}
 
@@ -142,18 +142,18 @@ public class MyGame extends VariableFrameRateGame
     	//grass = new TextureImage("mud_cracked_dry_03.jpg"); // This is what the ground actually looks like
 		grass = new TextureImage("GroundTxt.jpg");
 		
-		rooktxRed = new TextureImage("RedRookTxt.jpg"); // Texture for the rook piece
-		rooktxBlue = new TextureImage("BlueRookTxt.jpg");
-		kingtxRed = new TextureImage("RedKingTxt.jpg"); // Texture for the king piece
-		kingtxBlue = new TextureImage("BlueKingTxt.jpg");
-		queentxRed = new TextureImage("RedQueenTxt.jpg"); // Texture for the queen piece
-		queentxBlue = new TextureImage("BlueQueenTxt.jpg");
-		knighttxRed = new TextureImage("RedKnightTxt.jpg"); // Texture for the knight piece
-		knighttxBlue = new TextureImage("BlueKnightTxt.jpg");
-		pawntxRed = new TextureImage("RedPawnTxt.jpg"); // Texture for the pawn piece
-		pawntxBlue = new TextureImage("BluePawnTxt.jpg");
-		bishoptxRed = new TextureImage("RedBishopTxt.jpg"); // Texture for the bishop piece
-		bishoptxBlue = new TextureImage("BlueBishopTxt.jpg");
+		rooktxRed = new TextureImage("RedRook_v2.jpg"); // Texture for the rook piece
+		rooktxBlue = new TextureImage("BlueRook_v2.jpg");
+		kingtxRed = new TextureImage("RedKing_v2.jpg"); // Texture for the king piece
+		kingtxBlue = new TextureImage("BlueKing_v2.jpg");
+		queentxRed = new TextureImage("RedQueen_v2.jpg"); // Texture for the queen piece
+		queentxBlue = new TextureImage("BlueQueen_v2.jpg");
+		knighttxRed = new TextureImage("RedKnight_v2.jpg"); // Texture for the knight piece
+		knighttxBlue = new TextureImage("BlueKnight_v2.jpg");
+		pawntxRed = new TextureImage("RedPawn_v2.jpg"); // Texture for the pawn piece
+		pawntxBlue = new TextureImage("BluePawn_v2.jpg");
+		bishoptxRed = new TextureImage("RedBishop_v2.jpg"); // Texture for the bishop piece
+		bishoptxBlue = new TextureImage("BlueBishop_v2.jpg");
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public class MyGame extends VariableFrameRateGame
 
 		redRook = new ChessPiece(0, "Rook", rookS, rooktxRed);
 		playerPieces[0] = redRook;
-		redRook.setLocalTranslation((new Matrix4f()).translation(-2.5f, 1.1f, -12.5f));
+		redRook.setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, -12.5f));
     	redRook.setLocalScale((new Matrix4f()).scaling(1.0f));
     	redRook.getRenderStates().hasLighting(true);
 		avatar = redRook;
@@ -215,7 +215,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		blueRook = new ChessPiece(0, "Rook", rookS, rooktxBlue);
 		opponentPieces[0] = blueRook;
-		blueRook.setLocalTranslation((new Matrix4f()).translation(-2.5f, 1.1f, 12.5f));
+		blueRook.setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, 12.5f));
     	blueRook.setLocalScale((new Matrix4f()).scaling(1.0f));
     	blueRook.getRenderStates().hasLighting(true);
 		
@@ -237,13 +237,13 @@ public class MyGame extends VariableFrameRateGame
 		
 		redKing = new ChessPiece(1, "King", kingS, kingtxRed);
 		playerPieces[1] = redKing;
-		redKing.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, -12.5f));
+		redKing.setLocalTranslation((new Matrix4f()).translation(2.5f, 0f, -12.5f));
 		redKing.setLocalScale((new Matrix4f()).scaling(1.0f));
 		redKing.getRenderStates().hasLighting(true);
 		
 		blueKing = new ChessPiece(1, "King", kingS, kingtxBlue);
 		opponentPieces[1] = blueKing;
-		blueKing.setLocalTranslation((new Matrix4f()).translation(2.5f, 1.1f, 12.5f));
+		blueKing.setLocalTranslation((new Matrix4f()).translation(2.5f, 0f, 12.5f));
 		blueKing.setLocalScale((new Matrix4f()).scaling(1.0f));
 		blueKing.getRenderStates().hasLighting(true);
 		
@@ -257,7 +257,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		redQueen = new ChessPiece(2, "Queen", queenS, queentxRed);
 		playerPieces[2] = redQueen;
-		redQueen.setLocalTranslation((new Matrix4f()).translation(7.5f, 1.1f, -12.5f));
+		redQueen.setLocalTranslation((new Matrix4f()).translation(7.5f, 0f, -12.5f));
 		redQueen.setLocalScale((new Matrix4f()).scaling(1.0f));
 		redQueen.getRenderStates().hasLighting(true);
 
@@ -271,7 +271,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		blueQueen = new ChessPiece(2, "Queen", queenS, queentxBlue);
 		opponentPieces[2] = blueQueen;
-		blueQueen.setLocalTranslation((new Matrix4f()).translation(7.5f, 1.1f, 12.5f));
+		blueQueen.setLocalTranslation((new Matrix4f()).translation(7.5f, 0f, 12.5f));
 		blueQueen.setLocalScale((new Matrix4f()).scaling(1.0f));
 		blueQueen.getRenderStates().hasLighting(true);
 		
@@ -285,7 +285,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		redKnight = new ChessPiece(3, "Knight", knightS, knighttxRed);
 		playerPieces[3] = redKnight;
-		redKnight.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, -12.5f));
+		redKnight.setLocalTranslation((new Matrix4f()).translation(12.5f, 0f, -12.5f));
 		redKnight.setLocalScale((new Matrix4f()).scaling(1.0f));
 		redKnight.getRenderStates().hasLighting(true);
 
@@ -299,7 +299,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		blueKnight = new ChessPiece(3, "Knight", knightS, knighttxBlue);
 		opponentPieces[3] = blueKnight;
-		blueKnight.setLocalTranslation((new Matrix4f()).translation(12.5f, 1.1f, 12.5f));
+		blueKnight.setLocalTranslation((new Matrix4f()).translation(12.5f, 0f, 12.5f));
 		blueKnight.setLocalScale((new Matrix4f()).scaling(1.0f));
 		blueKnight.getRenderStates().hasLighting(true);
 		
@@ -313,7 +313,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		redPawn = new ChessPiece(4, "Pawn", pawnS, pawntxRed);
 		playerPieces[4] = redPawn;
-		redPawn.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0.6f, -12.5f));
+		redPawn.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0f, -12.5f));
 		redPawn.setLocalScale((new Matrix4f()).scaling(1.0f));
 		redPawn.getRenderStates().hasLighting(true);
 
@@ -327,7 +327,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		bluePawn = new ChessPiece(4, "Pawn", pawnS, pawntxBlue);
 		opponentPieces[4] = bluePawn;
-		bluePawn.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0.6f, 12.5f));
+		bluePawn.setLocalTranslation((new Matrix4f()).translation(-12.5f, 0f, 12.5f));
 		bluePawn.setLocalScale((new Matrix4f()).scaling(1.0f));
 		bluePawn.getRenderStates().hasLighting(true);
 		
@@ -341,7 +341,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		redBishop = new ChessPiece(5, "Bishop", bishopS, bishoptxRed);
 		playerPieces[5] = redBishop;
-		redBishop.setLocalTranslation((new Matrix4f()).translation(-7.5f, 1.1f, -12.5f));
+		redBishop.setLocalTranslation((new Matrix4f()).translation(-7.5f, 0f, -12.5f));
 		redBishop.setLocalScale((new Matrix4f()).scaling(1.0f));
 		redBishop.getRenderStates().hasLighting(true);
 
@@ -355,7 +355,7 @@ public class MyGame extends VariableFrameRateGame
 		
 		blueBishop = new ChessPiece(5, "Bishop", bishopS, bishoptxBlue);
 		opponentPieces[5] = blueBishop;
-		blueBishop.setLocalTranslation((new Matrix4f()).translation(-7.55f, 1.1f, 12.5f));
+		blueBishop.setLocalTranslation((new Matrix4f()).translation(-7.55f, 0f, 12.5f));
 		blueBishop.setLocalScale((new Matrix4f()).scaling(1.0f));
 		blueBishop.getRenderStates().hasLighting(true);
 		

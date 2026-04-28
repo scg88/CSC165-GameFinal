@@ -1,0 +1,10 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\javagaming\\jinput\\jinput-2.0.10.jar",
+        "c:\\javagaming\\joml\\joml-1.10.7.jar",
+        "c:\\javagaming\\jinput\\jinput-2.0.10-natives-all.jar",
+        "c:\\javagaming\\libbulletjme\\Libbulletjme-21.2.1.jar",
+        "c:\\javagaming\\jogl\\jogamp-fat.jar"
+    ]
+}
