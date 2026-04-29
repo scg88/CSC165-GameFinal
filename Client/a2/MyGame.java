@@ -463,7 +463,7 @@ public class MyGame extends VariableFrameRateGame
   		rightVp.setBorderColor(0.0f, 1.0f, 0.0f); // Green border
     
    	 	// Initial Main Camera setup
-   	 	leftCamera.setLocation(new Vector3f(-2, 0, 2));
+   	 	leftCamera.setLocation(new Vector3f(-2, 1, 3));
    		leftCamera.setU(new Vector3f(1, 0, 0));
    	 	leftCamera.setV(new Vector3f(0, 1, 0));
     	leftCamera.setN(new Vector3f(0, 0, -1));
@@ -491,7 +491,7 @@ public class MyGame extends VariableFrameRateGame
 		Camera cam = engine.getRenderSystem().getViewport("LEFT").getCamera();
 		
 		// ---A2 REQUIREMENT: Create the CameraOrbit3D controller and associate it with the avatar and camera ---
-		orbitController = new CameraOrbit3D(cam, avatar, gpName, engine);
+		orbitController = new CameraOrbit3D(cam, avatar, gpName, engine, 0f, 20f, 6.5f);
 		
 		// Instantiate the actions
     	ZoomOverheadAction zoomOverhead = new ZoomOverheadAction();
@@ -627,8 +627,8 @@ public class MyGame extends VariableFrameRateGame
 			// TERRAIN SNAP LOGIC
 			// Get the actual height of the terrain at this specific (x, z)
     		float groundHeight = terr.getHeight(loc.x, loc.z);
-			float dolphinOffset = 0.8f; // Offset to keep dolphin above ground.
-			float adjustedHeight = groundHeight + dolphinOffset;
+			//float dolphinOffset = 0.8f; // Offset to keep dolphin above ground.
+			float adjustedHeight = groundHeight; //+ dolphinOffset;
 			avatar.setLocalLocation(new Vector3f(loc.x, loc.y + vertVel, loc.z));
 
             // JUMP LOGIC - Apply current vertical velocity to the avatar's position

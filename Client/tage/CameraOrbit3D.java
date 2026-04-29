@@ -36,6 +36,18 @@ public class CameraOrbit3D {
         setupInputs(gpName);
         updateCameraPosition(avatar);
     }
+	
+	public CameraOrbit3D(Camera cam, GameObject av, String gpName, Engine e, float azi, float ele, float radi) {
+        engine = e;
+        camera = cam;
+        avatar = av;
+        cameraAzimuth = azi;     // Start directly behind
+        cameraElevation = ele;  // Start slightly above
+        cameraRadius = radi;      // Default zoom distance
+        
+        setupInputs(gpName);
+        updateCameraPosition(avatar);
+    }
 
     private void setupInputs(String gp) {
         InputManager im = engine.getInputManager();

@@ -45,7 +45,7 @@ public class FwdAction extends AbstractInputAction
             Vector3f oldPos = av.getWorldLocation();
             newPosition = oldPos.add(fwd.mul(moveAmount, new Vector3f()), new Vector3f());
             // Ground check
-            if (newPosition.y < 0.8f) newPosition.y = 0.8f;
+            //if (newPosition.y < 0.8f) newPosition.y = 0.8f;
             av.setLocalLocation(newPosition);
         } else {
             // 1. Access the TAGE camera
