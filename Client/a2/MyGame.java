@@ -252,11 +252,12 @@ public class MyGame extends VariableFrameRateGame
 		}
 		
 		//Build the red king piece
-		opponentPieces[14] = new ChessPiece(14, "King", "e8", kingS, kingtxRed);
-		opponentPieces[14].setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, 17.5f));
-		opponentPieces[14].setLocalScale((new Matrix4f()).scaling(1.0f));
-		opponentPieces[14].getRenderStates().hasLighting(true);
-		opponentPieces[14].setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
+		redKing = new ChessPiece(14, "King", "e8", kingSRed, kingtxRed);
+		redKing.setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, 17.5f));
+		redKing.setLocalScale((new Matrix4f()).scaling(1.0f));
+		redKing.getRenderStates().hasLighting(true);
+		redKing.setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
+		opponentPieces[14] = redKing;
 		
 		//Build the red queen piece
 		opponentPieces[15] = new ChessPiece(15, "Queen", "d8", queenS, queentxRed);
@@ -304,10 +305,11 @@ public class MyGame extends VariableFrameRateGame
 		}
 		
 		//Build the blue king piece
-		playerPieces[14] = new ChessPiece(14, "King", "e1", kingS, kingtxBlue);
-		playerPieces[14].setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, -17.5f));
-		playerPieces[14].setLocalScale((new Matrix4f()).scaling(1.0f));
-		playerPieces[14].getRenderStates().hasLighting(true);
+		blueKing = new ChessPiece(14, "King", "e1", kingSBlue, kingtxBlue);
+		blueKing.setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, -17.5f));
+		blueKing.setLocalScale((new Matrix4f()).scaling(1.0f));
+		blueKing.getRenderStates().hasLighting(true);
+		playerPieces[14] = blueKing;
 		
 		//Build the blue queen piece
 		playerPieces[15] = new ChessPiece(15, "Queen", "d1", queenS, queentxBlue);
@@ -675,28 +677,38 @@ public class MyGame extends VariableFrameRateGame
 			case KeyEvent.VK_2:
 			boardL.displayBoard();
 				break;
-				break;
 
 			// ---- MILESTONE 2: ANIMATION TRIGGERS ----
         	case KeyEvent.VK_V: // Red King: Wave Sword
             	if (redKing != null) 
+				{
                 	redKing.playAction("waveSword", 0.5f, AnimatedShape.EndType.LOOP);
-            	break;
+            	}
+				break;
         	case KeyEvent.VK_B: // Red King: Wave Hand
             	if (redKing != null) 
-                	redKing.playAction("waveHand", 0.5f, AnimatedShape.EndType.LOOP);
-            	break;
+                {
+					redKing.playAction("waveHand", 0.5f, AnimatedShape.EndType.LOOP);
+            	}
+				break;
         	case KeyEvent.VK_N: // Blue King: Wave Sword
-            	if (blueKing != null) 
+            	System.out.println("N pressed");
+				if (blueKing != null)
+				{
+					System.out.println("blueKing is NOT null");
                 	blueKing.playAction("waveSword", 0.5f, AnimatedShape.EndType.LOOP);
+				}
+				else{System.out.println("blueKing is null");}
             	break;
         	case KeyEvent.VK_M: // Blue King: Wave Hand
             	if (blueKing != null) 
-                	blueKing.playAction("waveHand", 0.5f, AnimatedShape.EndType.LOOP);
-            	break;
+                {	
+					blueKing.playAction("waveHand", 0.5f, AnimatedShape.EndType.LOOP);
+            	}
+				break;
         	case KeyEvent.VK_Z: // Stop All Animations
-            	if (redKing != null) redKing.stopAction();
-            	if (blueKing != null) blueKing.stopAction();
+            	if (redKing != null) {redKing.stopAction();}
+            	if (blueKing != null) {blueKing.stopAction();}
             	break;
 		}
 		super.keyPressed(e);

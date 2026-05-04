@@ -21,19 +21,22 @@ public class ChessPiece extends GameObject
 
 		// If the shape passed in is actually an AnimatedShape, store it
         if (s instanceof AnimatedShape) {
+			System.out.println("Animated shape!");
             animatedShape = (AnimatedShape) s;
         }
 	}
 	
-	public ChessPiece(int id, String type, ObjShape s, TextureImage t, Vector3f p)
+	public ChessPiece(int id, String type, String startPos, ObjShape s, TextureImage t, Vector3f p)
 	{
-		this(id, type, s, t); // Calls the constructor above to avoid repeating code
+		this(id, type, startPos, s, t); // Calls the constructor above to avoid repeating code
         setPosition(p);
 	}
 	
 	// Helper method to trigger animations easily
     public void playAction(String name, float speed, AnimatedShape.EndType endType) {
-        if (animatedShape != null) {
+        System.out.println("Trying animation");
+		if (animatedShape != null) {
+			System.out.println("Animation isn't null");
             animatedShape.stopAnimation();
             animatedShape.playAnimation(name, speed, endType, 0);
         }
