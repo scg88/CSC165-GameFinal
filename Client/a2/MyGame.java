@@ -61,7 +61,10 @@ public class MyGame extends VariableFrameRateGame
 	// **** MILESTONE 1
 	private TextureImage rooktxRed, rooktxBlue, kingtxRed, kingtxBlue, queentxRed, 
 		queentxBlue, knighttxRed, knighttxBlue, pawntxRed, pawntxBlue, bishoptxRed, bishoptxBlue;
-	private ObjShape rookS, kingS, queenS, knightS, pawnS, bishopS;
+	private ObjShape rookS, queenS, knightS, pawnS, bishopS;
+
+	// **** Removed for MILESTONE 2 - now using AnimatedShape for the king piece
+	// private ObjShape kingS; 
 
 	// **** Skybox
 	// **** MILESTONE 1
@@ -72,6 +75,9 @@ public class MyGame extends VariableFrameRateGame
 	private GameObject terr;
 	private ObjShape terrS;
 	private TextureImage hills, grass;
+
+	// **** MILESTONE 2 Animation
+	private AnimatedShape kingSRed, kingSBlue;
 
 	private CameraOrbit3D orbitController;
 	private RotationController pyramidRotController;
@@ -125,7 +131,7 @@ public class MyGame extends VariableFrameRateGame
 
 		// Game Piece Shapes
 		rookS = new ImportedModel("Rook_v2.obj");
-		kingS = new ImportedModel("King_v2.obj");
+		//kingS = new ImportedModel("King_v2.obj");
 		queenS = new ImportedModel("Queen_v2.obj");
 		knightS = new ImportedModel("Knight_v2.obj");
 		pawnS = new ImportedModel("Pawn_v2.obj");
@@ -134,6 +140,14 @@ public class MyGame extends VariableFrameRateGame
 		// Board
 		boardS = new Plane();
 
+		// MILESTONE 2 - Animated King Piece Shape
+		kingSRed = new AnimatedShape("King_v2.rkm", "King_v2.rks");
+		kingSRed.loadAnimation("waveSword", "King_v2_waveSword.rka");
+		kingSRed.loadAnimation("waveHand", "King_v2_waveHand.rka");
+
+		kingSBlue = new AnimatedShape("King_v2.rkm", "King_v2.rks");
+		kingSBlue.loadAnimation("waveSword", "King_v2_waveSword.rka");
+		kingSBlue.loadAnimation("waveHand", "King_v2_waveHand.rka");
 	}
 
 	@Override
@@ -584,6 +598,10 @@ public class MyGame extends VariableFrameRateGame
 			// --- Display moveable tiles logic
 			boardL.showMoves(boardL.validMoves(avatar));
 		}
+
+		// Update both king shapes
+    	if (kingSRed != null) kingSRed.updateAnimation();
+    	if (kingSBlue != null) kingSBlue.updateAnimation();
 	}
 
 	// VIEWPORT ZOOM - as per prompt
@@ -657,6 +675,29 @@ public class MyGame extends VariableFrameRateGame
 			case KeyEvent.VK_2:
 			boardL.displayBoard();
 				break;
+				break;
+
+			// ---- MILESTONE 2: ANIMATION TRIGGERS ----
+        	case KeyEvent.VK_V: // Red King: Wave Sword
+            	if (redKing != null) 
+                	redKing.playAction("waveSword", 0.5f, AnimatedShape.EndType.LOOP);
+            	break;
+        	case KeyEvent.VK_B: // Red King: Wave Hand
+            	if (redKing != null) 
+                	redKing.playAction("waveHand", 0.5f, AnimatedShape.EndType.LOOP);
+            	break;
+        	case KeyEvent.VK_N: // Blue King: Wave Sword
+            	if (blueKing != null) 
+                	blueKing.playAction("waveSword", 0.5f, AnimatedShape.EndType.LOOP);
+            	break;
+        	case KeyEvent.VK_M: // Blue King: Wave Hand
+            	if (blueKing != null) 
+                	blueKing.playAction("waveHand", 0.5f, AnimatedShape.EndType.LOOP);
+            	break;
+        	case KeyEvent.VK_Z: // Stop All Animations
+            	if (redKing != null) redKing.stopAction();
+            	if (blueKing != null) blueKing.stopAction();
+            	break;
 		}
 		super.keyPressed(e);
 	}
