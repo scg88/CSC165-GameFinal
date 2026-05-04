@@ -8,7 +8,6 @@ import tage.*;
 public class FwdAction extends AbstractInputAction
 { 
     private MyGame game;
-    private GameObject av;
     private Vector3f oldPosition, newPosition;
     private Vector4f fwdDirection;
 	private ProtocolClient protClient;
@@ -38,16 +37,11 @@ public class FwdAction extends AbstractInputAction
         float speed = 15.0f;
         float moveAmount = speed * keyValue * (time / 1000.0f); // scale the movement amount
 
-        if (game.getIsRiding()) {
-            av = game.getAvatar();
-            Vector3f fwd = av.getWorldForwardVector();
-            // Calculate new position using JOML destination parameter to avoid mutation bugs
-            Vector3f oldPos = av.getWorldLocation();
-            newPosition = oldPos.add(fwd.mul(moveAmount, new Vector3f()), new Vector3f());
-            // Ground check
-            //if (newPosition.y < 0.8f) newPosition.y = 0.8f;
-            av.setLocalLocation(newPosition);
-        } else {
+		if(game.getChessM())
+		{
+			game.getAvatar().setLocalTranslation((game.getAvatar().getWorldTranslation()).translate(0f, 0f, 5f*keyValue));
+		}
+		else {
             // 1. Access the TAGE camera
             Camera cam = game.getEngine().getRenderSystem().getViewport("LEFT").getCamera();
             // 2. Store the camera's current position
@@ -62,6 +56,6 @@ public class FwdAction extends AbstractInputAction
             cam.setLocation(newPosition);
         }
 
-		protClient.sendMoveMessage(av.getWorldLocation(), game.getPieceId());
+		protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
     } 
 }

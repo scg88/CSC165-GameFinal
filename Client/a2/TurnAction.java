@@ -8,10 +8,12 @@ import tage.*;
 public class TurnAction extends AbstractInputAction
 { 
     private MyGame game;
-
-    public TurnAction(MyGame g)
+	private ProtocolClient protClient;
+	
+    public TurnAction(MyGame g, ProtocolClient p)
     { 
         game = g;
+		protClient = p;
     }
 
     @Override
@@ -34,22 +36,15 @@ public class TurnAction extends AbstractInputAction
         
         float rotAmount = rotSpeed * keyValue * (time / 1000.0f);
 
-        if (game.getIsRiding()) {
-            // Rotate the dolphin based on input
-            game.getAvatar().globalYaw(rotAmount);
-        } else {
+        if(game.getChessM())
+		{
+			game.getAvatar().setLocalTranslation((game.getAvatar().getWorldTranslation()).translate(5f*keyValue, 0f, 0f));
+		}
+        else {
             Camera cam = game.getEngine().getRenderSystem().getViewport("LEFT").getCamera();
             cam.yaw(rotAmount);
-            /* 
-            float angle = keyValue * -0.02f; // Adjust sensitivity
-            Vector3f up = cam.getV();
-            Vector3f newU = new Vector3f(cam.getU()).rotateAxis(angle, up.x, up.y, up.z);
-            Vector3f newN = new Vector3f(cam.getN()).rotateAxis(angle, up.x, up.y, up.z);
-            cam.setU(newU);
-            cam.setN(newN);
-            */
         }
-        
+		protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
     } 
 }
 

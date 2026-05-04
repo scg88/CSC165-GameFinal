@@ -21,5 +21,6 @@ public class SpaceBarAction extends AbstractInputAction {
 
         // Neutralized for Final Project cleanup
         game.setHUDMessage("Space Bar Pressed - Ready for Chess logic!");
+		System.out.println(game.getBoard().movePiece(game.getAvatar()));
     }
 }

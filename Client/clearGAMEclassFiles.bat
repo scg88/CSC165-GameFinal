@@ -1,1 +1,1 @@
-del .\myGame\*.class
+del .\a2\*.class

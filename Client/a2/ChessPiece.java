@@ -7,12 +7,14 @@ public class ChessPiece extends GameObject
 {
 	int pieceId;
 	String pieceType;
+	String CNpos;
 	
-	public ChessPiece(int id, String type, ObjShape s, TextureImage t)
+	public ChessPiece(int id, String type, String startPos, ObjShape s, TextureImage t)
 	{
 		super(GameObject.root(), s, t);
 		pieceId = id;
 		pieceType = type;
+		CNpos = startPos;
 	}
 	
 	public ChessPiece(int id, String type, ObjShape s, TextureImage t, Vector3f p)
@@ -27,4 +29,7 @@ public class ChessPiece extends GameObject
 	public String getType() { return pieceType; }
 	public void setPosition(Vector3f m) { setLocalLocation(m); }
 	public Vector3f getPosition() { return getWorldLocation(); }
+	
+	public String getCNPos(){return CNpos;}
+	public void setCNPos(String newPos){CNpos = newPos;}
 }
