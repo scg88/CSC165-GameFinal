@@ -9,9 +9,12 @@ import org.joml.*;
 
 public class SpaceBarAction extends AbstractInputAction {
     private MyGame game;
+	private boolean move;
+	private ProtocolClient protClient;
 
-    public SpaceBarAction(MyGame g) {
+    public SpaceBarAction(MyGame g, ProtocolClient p) {
         game = g;
+		protClient = p;
     }
 
     @Override
@@ -21,6 +24,16 @@ public class SpaceBarAction extends AbstractInputAction {
 
         // Neutralized for Final Project cleanup
         game.setHUDMessage("Space Bar Pressed - Ready for Chess logic!");
-		System.out.println(game.getBoard().movePiece(game.getAvatar()));
+		
+		if(game.getTurn() || game.getGhostManager().isGhostAvatar())
+		{
+			move = game.getBoard().movePlayerPiece(game.getAvatar());
+			if (move)
+			{
+				protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
+				game.toggleTurn();
+				System.out.println("Value is: " + game.getTurn());
+			}
+		}
     }
 }

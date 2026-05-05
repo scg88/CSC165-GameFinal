@@ -37,6 +37,26 @@ public class Board
 		boardState.displayMatrix();
 	}
 	
+	public void showMoves(int[][] validSpots)
+	{	
+		boolean found;
+		for(int i = 0; i < tiles.length; i++)
+		{
+			found = false;
+			for(int j = 0; j < validSpots.length; j++)
+			{
+				if(tiles[i].getPos()[0] == validSpots[j][0] && tiles[i].getPos()[1] == validSpots[j][1])
+				{
+					tiles[i].getRenderStates().enableRendering();
+					found = true;
+				}
+			}
+			if(!found)
+			{
+				tiles[i].getRenderStates().disableRendering();
+			}
+		}
+	}
 	public int[][] validMoves(ChessPiece piece)
 	{
 		String type = piece.getType();
@@ -50,17 +70,17 @@ public class Board
 		{
 			case "Pawn":
 				//Can move forwards?
-				if(boardState.getIndividual(position[0]+1, position[1]) == 0)
+				if(position[0]+i+1<8 && boardState.getIndividual(position[0]+1, position[1]) == 0)
 				{
 					listOfSpots.add(new int[]{position[0]+1, position[1]});
 				}
 				//Can capture up+left?
-				if(position[1] != 0 && boardState.getIndividual(position[0]+1, position[1]-1) == 2)
+				if(position[0]+i+1<8 && position[1] != 0 && boardState.getIndividual(position[0]+1, position[1]-1) == 2)
 				{
 					listOfSpots.add(new int[]{position[0]+1, position[1]-1});
 				}
 				//Can capture up+right?
-				if(position[1] != 7 && boardState.getIndividual(position[0]+1, position[1]+1) == 2)
+				if(position[0]+i+1<8 && position[1] != 7 && boardState.getIndividual(position[0]+1, position[1]+1) == 2)
 				{
 					listOfSpots.add(new int[]{position[0]+1, position[1]+1});
 				}
@@ -343,26 +363,6 @@ public class Board
 		int[][] validSpots = listOfSpots.toArray(new int[listOfSpots.size()][2]);
 		return validSpots;
 	}
-	public void showMoves(int[][] validSpots)
-	{	
-		boolean found;
-		for(int i = 0; i < tiles.length; i++)
-		{
-			found = false;
-			for(int j = 0; j < validSpots.length; j++)
-			{
-				if(tiles[i].getPos()[0] == validSpots[j][0] && tiles[i].getPos()[1] == validSpots[j][1])
-				{
-					tiles[i].getRenderStates().enableRendering();
-					found = true;
-				}
-			}
-			if(!found)
-			{
-				tiles[i].getRenderStates().disableRendering();
-			}
-		}
-	}
 	public int[] decode(String CNPos)
 	{
 		char sCol = CNPos.toUpperCase().charAt(0);
@@ -405,48 +405,8 @@ public class Board
 		int[] position = {iRow, iCol};
 		return position;
 	}
-	public String encode(int[] arrayPos)
-	{
-		String sRow, sCol;
-		String CNPos; 
-		
-		switch(arrayPos[1])
-		{
-			case 0:
-				sCol = "a";
-				break;
-			case 1:
-				sCol = "b";
-				break;
-			case 2:
-				sCol = "c";
-				break;
-			case 3:
-				sCol = "d";
-				break;
-			case 4:
-				sCol = "e";
-				break;
-			case 5:
-				sCol = "f";
-				break;
-			case 6:
-				sCol = "g";
-				break;
-			case 7:
-				sCol = "h";
-				break;
-			default:
-				System.out.println("AHHHHH");
-				sCol = "z";
-				break;
-		}
-		sRow = String.valueOf(arrayPos[0] + 1);
-		
-		CNPos = sCol.concat(sRow);
-		return CNPos;
-	}
-	public boolean movePiece(ChessPiece piece)
+	
+	public boolean movePlayerPiece(ChessPiece piece)
 	{
 		int[] situation = new int[3];
 		boolean success;
@@ -469,7 +429,6 @@ public class Board
 				success = false;
 				break;
 		}
-		//System.out.println(situation[0]);
 		return success;
 	}
 	public int[] validSpotCheck(ChessPiece piece)
@@ -517,5 +476,85 @@ public class Board
 			if(piece.getWorldLocation().z() == (float)-17.5+5*i){currentSpot[0]=i;}
 		}
 		return currentSpot;
+	}
+	public String encode(int[] arrayPos)
+	{
+		String sRow, sCol;
+		String CNPos; 
+		
+		switch(arrayPos[1])
+		{
+			case 0:
+				sCol = "a";
+				break;
+			case 1:
+				sCol = "b";
+				break;
+			case 2:
+				sCol = "c";
+				break;
+			case 3:
+				sCol = "d";
+				break;
+			case 4:
+				sCol = "e";
+				break;
+			case 5:
+				sCol = "f";
+				break;
+			case 6:
+				sCol = "g";
+				break;
+			case 7:
+				sCol = "h";
+				break;
+			default:
+				System.out.println("AHHHHH");
+				sCol = "z";
+				break;
+		}
+		sRow = String.valueOf(arrayPos[0] + 1);
+		
+		CNPos = sCol.concat(sRow);
+		return CNPos;
+	}
+	
+	public Vector3f moveEnemyPiece(ChessPiece piece, Vector3f oldM)
+	{
+		Vector3f newM;
+		int[] oldSpot = new int[2]; int[] newSpot = new int[2];
+		oldSpot = currentSpot(oldM);
+		newSpot = flipSpot(oldSpot);
+		
+		boardState.chessMove(decode(piece.getCNPos()), newSpot, 2);
+		piece.setCNPos(encode(newSpot));
+		boardState.displayMatrix();
+		
+		return currentWorldSpot(newSpot);
+	}
+	public int[] currentSpot(Vector3f m)
+	{
+		int[] currentSpot = new int[2];
+		for(int i = 0; i < 8; i++)
+		{
+			//System.out.println("World Pos: X-" + piece.getWorldLocation().x() + ", Z-" + piece.getWorldLocation().z() + "; Current Checker: i=" 
+			//+ i + ", X/Z-" + ((float)17.5-5*i));
+			if(m.x() == (float)17.5-5*i){currentSpot[1]=i;}
+			if(m.z() == (float)-17.5+5*i){currentSpot[0]=i;}
+		}
+		return currentSpot;
+	}
+	public int[] flipSpot(int[] oldSpot)
+	{
+		int[] newSpot = new int[2];
+		newSpot[0] = 7-oldSpot[0];
+		newSpot[1] = 7-oldSpot[1];
+		return newSpot;
+	}
+	public Vector3f currentWorldSpot(int[] pos)
+	{
+		Vector3f worldPos = new Vector3f();
+		worldPos.set((float)17.5-5*pos[1],0f, (float)-17.5+5*pos[0]);
+		return worldPos;
 	}
 }

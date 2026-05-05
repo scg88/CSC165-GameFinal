@@ -44,7 +44,7 @@ public class TurnAction extends AbstractInputAction
             Camera cam = game.getEngine().getRenderSystem().getViewport("LEFT").getCamera();
             cam.yaw(rotAmount);
         }
-		protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
+		//protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
     } 
 }
 

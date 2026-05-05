@@ -26,6 +26,13 @@ public class GhostAvatar extends GameObject
 	}
 	
 	public UUID getID() { return uuid; }
-	public void setPosition(Vector3f m, int id) { setLocalLocation(m); game.getOpponentPiece(id).setLocalLocation(m); }
+	public void setPosition(Vector3f oldM, int id) 
+	{ 
+		Vector3f newM = game.getBoard().moveEnemyPiece(game.getOpponentPiece(id), oldM);
+		setLocalLocation(newM);
+		game.getOpponentPiece(id).setLocalLocation(newM); 
+		game.toggleTurn();
+		System.out.println("Value is: " + game.getTurn());
+	}
 	public Vector3f getPosition() { return getWorldLocation(); }
 }

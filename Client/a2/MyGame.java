@@ -95,6 +95,8 @@ public class MyGame extends VariableFrameRateGame
 	private Board boardL;
 	private TextureImage tilesT;
 	private boolean chessMovement = true;
+	private boolean myTurn = true;
+	private boolean done = false;
 
 	public MyGame(String serverAddress, int serverPort, String protocol) 
 	{ 
@@ -214,8 +216,8 @@ public class MyGame extends VariableFrameRateGame
 		//Build the red pawns
 		for (int i = 0; i < 8; i++)
 		{
-			opponentPieces[i] = new ChessPiece(i, "Pawn", (char)(97+i) + "7", pawnS, pawntxRed);
-			opponentPieces[i].setLocalTranslation((new Matrix4f()).translation((float)17.5-5*i, 0f, 12.5f));
+			opponentPieces[i] = new ChessPiece(i, "Pawn", (char)(104-i) + "7", pawnS, pawntxRed);
+			opponentPieces[i].setLocalTranslation((new Matrix4f()).translation((float)-17.5+5*i, 0f, 12.5f));
 			opponentPieces[i].setLocalScale((new Matrix4f()).scaling(1.0f));
 			opponentPieces[i].getRenderStates().hasLighting(true);
 			opponentPieces[i].setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
@@ -224,8 +226,8 @@ public class MyGame extends VariableFrameRateGame
 		//Build the red rook pieces
 		for (int i = 0; i < 2; i++)
 		{
-			opponentPieces[i+8] = new ChessPiece(i+8, "Rook", (char)(97+(i*7)) + "8", rookS, rooktxRed);
-			opponentPieces[i+8].setLocalTranslation((new Matrix4f()).translation((float)17.5-35*i, 0f, 17.5f));
+			opponentPieces[i+8] = new ChessPiece(i+8, "Rook", (char)(104-(i*7)) + "8", rookS, rooktxRed);
+			opponentPieces[i+8].setLocalTranslation((new Matrix4f()).translation((float)-17.5+35*i, 0f, 17.5f));
 			opponentPieces[i+8].setLocalScale((new Matrix4f()).scaling(1.0f));
 			opponentPieces[i+8].getRenderStates().hasLighting(true);
 			opponentPieces[i+8].setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
@@ -234,8 +236,8 @@ public class MyGame extends VariableFrameRateGame
 		//Build the red knight pieces 
 		for (int i = 0; i < 2; i++)
 		{
-			opponentPieces[i+10] = new ChessPiece(i+10, "Knight", (char)(98+(i*5)) + "8", knightS, knighttxRed);
-			opponentPieces[i+10].setLocalTranslation((new Matrix4f()).translation((float)12.5-25*i, 0f, 17.5f));
+			opponentPieces[i+10] = new ChessPiece(i+10, "Knight", (char)(103-(i*5)) + "8", knightS, knighttxRed);
+			opponentPieces[i+10].setLocalTranslation((new Matrix4f()).translation((float)-12.5+25*i, 0f, 17.5f));
 			opponentPieces[i+10].setLocalScale((new Matrix4f()).scaling(1.0f));
 			opponentPieces[i+10].getRenderStates().hasLighting(true);
 			opponentPieces[i+10].setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
@@ -244,8 +246,8 @@ public class MyGame extends VariableFrameRateGame
 		//Build the red bishop pieces 
 		for (int i = 0; i < 2; i++)
 		{
-			opponentPieces[i+12] = new ChessPiece(i+12, "Bishop", (char)(99+(i*3)) + "8", bishopS, bishoptxRed);
-			opponentPieces[i+12].setLocalTranslation((new Matrix4f()).translation((float)7.5-15*i, 0f, 17.5f));
+			opponentPieces[i+12] = new ChessPiece(i+12, "Bishop", (char)(102-(i*3)) + "8", bishopS, bishoptxRed);
+			opponentPieces[i+12].setLocalTranslation((new Matrix4f()).translation((float)-7.5+15*i, 0f, 17.5f));
 			opponentPieces[i+12].setLocalScale((new Matrix4f()).scaling(1.0f));
 			opponentPieces[i+12].getRenderStates().hasLighting(true);
 			opponentPieces[i+12].setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
@@ -436,7 +438,7 @@ public class MyGame extends VariableFrameRateGame
 		TurnAction turnAction = new TurnAction(this, protClient);
 		PitchAction pitchAction = new PitchAction(this);
 		TakePhotoAction takePhotoAction = new TakePhotoAction(this);
-		SpaceBarAction spaceAction = new SpaceBarAction(this);
+		SpaceBarAction spaceAction = new SpaceBarAction(this, protClient);
 		JumpAction jumpAction = new JumpAction(this);
 		ToggleAxesAction toggleAxesAction = new ToggleAxesAction(this);
 
@@ -526,6 +528,8 @@ public class MyGame extends VariableFrameRateGame
 	public int getPieceId() {return id;}
 	public boolean getChessM() {return chessMovement;}
 	public Board getBoard() {return boardL;}
+	public boolean getTurn() {return myTurn;}
+	public void toggleTurn() {myTurn = !myTurn;}
 
 	@Override
 	public void update()
@@ -604,6 +608,16 @@ public class MyGame extends VariableFrameRateGame
 		// Update both king shapes
     	if (kingSRed != null) kingSRed.updateAnimation();
     	if (kingSBlue != null) kingSBlue.updateAnimation();
+		
+		//Sets up turn-based switching
+		if(!done && elapsTime > 6f)
+		{
+			if(gm.isGhostAvatar()){myTurn = false;}
+			System.out.println("Initial Check! Value is " + myTurn);
+			done = true;
+		}
+		//else if(done && elapsTime > 6f){System.out.println("Further Checks. Value is: " + myTurn);}
+		
 	}
 
 	// VIEWPORT ZOOM - as per prompt
@@ -719,14 +733,20 @@ public class MyGame extends VariableFrameRateGame
 	{	
 		isClientConnected = false;	
 		try 
-		{	protClient = new ProtocolClient(InetAddress.getByName(serverAddress), serverPort, serverProtocol, this);
-		} 	catch (UnknownHostException e) 
-		{	e.printStackTrace();
-		}	catch (IOException e) 
-		{	e.printStackTrace();
+		{	
+			protClient = new ProtocolClient(InetAddress.getByName(serverAddress), serverPort, serverProtocol, this);
+		} 	
+		catch (UnknownHostException e) 
+		{	
+			e.printStackTrace();
+		}	
+		catch (IOException e) 
+		{	
+			e.printStackTrace();
 		}
 		if (protClient == null)
-		{	System.out.println("missing protocol host");
+		{	
+			System.out.println("missing protocol host");
 		}
 		else
 		{	// Send the initial join message with a unique identifier for this client

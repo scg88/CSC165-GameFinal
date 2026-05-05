@@ -56,6 +56,6 @@ public class FwdAction extends AbstractInputAction
             cam.setLocation(newPosition);
         }
 
-		protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
+		//protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
     } 
 }
