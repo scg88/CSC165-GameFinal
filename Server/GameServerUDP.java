@@ -7,8 +7,11 @@ import tage.networking.server.IClientInfo;
 
 public class GameServerUDP extends GameConnectionServer<UUID> 
 {
-	public GameServerUDP(int localPort) throws IOException 
+	private NPCcontroller npcCtrl;
+
+	public GameServerUDP(int localPort, NPCcontroller npc) throws IOException 
 	{	super(localPort, ProtocolType.UDP);
+		this.npcCtrl = npc;
 	}
 
 	@Override
@@ -67,7 +70,79 @@ public class GameServerUDP extends GameConnectionServer<UUID>
 				String[] pos = {messageTokens[2], messageTokens[3], messageTokens[4]};
 				String pieceID = messageTokens[5];
 				sendMoveMessages(clientID, pos, pieceID);
-	}	}	}
+			}
+
+			// --- PROFESSOR'S NPC ADDITIONS ---
+            // Message Format: (needNPC, localId)
+        	if(messageTokens[0].equals("needNPC")) {
+            	if(messageTokens.length > 1) {
+                	UUID clientID = UUID.fromString(messageTokens[1]);
+                	sendNPCstart(clientID); 
+                	System.out.println("NPC start data sent to: " + clientID);
+            	}
+        	}
+
+            // 2. Client responding that they ARE close to the NPC
+        	// Message Format: (isnear, localId)
+        	if(messageTokens[0].equals("isnear")) {
+            	if(messageTokens.length > 1) {
+                	//UUID clientID = UUID.fromString(messageTokens[1]);
+                	handleNearTiming(null);
+            	}
+        	}
+	}	}	
+
+	public void handleNearTiming(UUID clientID) { 
+        npcCtrl.setNearFlag(true); 
+    }
+
+	public int getClientCount() {
+        // This returns the number of active players in the server's map
+        return getClients().size(); 
+    }
+
+	// CLASS EXAMPLE - SENDING NPC MESSAGES
+	// informs client of the wherabouts of the NPC
+	public void sendCheckForAvatarNear() {
+        try {
+            String message = "isnr," + npcCtrl.getNPC().getX() + "," 
+                           + npcCtrl.getNPC().getY() + "," 
+                           + npcCtrl.getNPC().getZ() + "," 
+                           + npcCtrl.getCriteria();
+            sendPacketToAll(message);
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+	public void sendNPCInfo(double x, double y, double z, double s, double a) {
+    	String message = "npcInfo,0," + x + "," + y + "," + z + "," + s + "," + a;
+    
+    	// Check if we have anyone to talk to
+    	if (getClients() == null || getClients().isEmpty()) return;
+
+    	// Use the keySet to loop through all connected UUIDs
+    	for (Object clientID : getClients().keySet()) {
+        	try {
+            	sendPacket(message, (UUID)clientID);
+        	} catch (IOException e) {
+            	// If one packet fails, we don't care, the next tick (25ms) will fix it
+        	} catch (Exception e) {
+            	// Catch-all for any weird thread-access issues
+        	}
+ 		}
+	}
+
+
+    public void sendNPCstart(UUID clientID) {
+        String[] pos = { ""+npcCtrl.getNPC().getX(), ""+npcCtrl.getNPC().getY(), ""+npcCtrl.getNPC().getZ() };
+        sendCreateNPCmsg(clientID, pos);
+    }
+
+    public void sendCreateNPCmsg(UUID clientID, String[] position) {
+        try {
+            String message = "createNPC," + "0," + position[0] + "," + position[1] + "," + position[2];
+            sendPacket(message, clientID);
+        } catch (IOException e) { e.printStackTrace(); }
+    }
 
 	// Informs the client who just requested to join the server if their if their 
 	// request was able to be granted. 

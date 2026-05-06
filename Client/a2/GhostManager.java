@@ -14,6 +14,7 @@ public class GhostManager
 {
 	private MyGame game;
 	private Vector<GhostAvatar> ghostAvatars = new Vector<GhostAvatar>();
+	private Vector<GhostNPC> ghostNPCs = new Vector<GhostNPC>(); // Added for NPC requirement
 
 	public GhostManager(VariableFrameRateGame vfrg)
 	{	
@@ -59,6 +60,69 @@ public class GhostManager
 		}		
 		return null;
 	}
+
+	// NPC related methods
+	public void createGhostNPC(UUID id, Vector3f position) {
+        System.out.println("Adding ghost NPC with ID --> " + id);
+        
+		// Instead of creating a new object, get the one already in your game
+    	GameObject sentinel = game.getNPC();
+
+		if (sentinel != null) {
+        	System.out.println("Sentinel linked to Server NPC ID: " + id);
+            
+            // Move your existing sentinel to the server's starting coordinates
+            sentinel.setLocalTranslation(new Matrix4f().translation(position.x(), position.y(), position.z()));
+            
+            // Set initial scale for the milestone
+            sentinel.setLocalScale((new Matrix4f()).scaling(0.7f));
+    	} else {
+        	System.out.println("Error: Sentinel object in MyGame is NULL!");
+    	}
+		
+    }
+
+	public void updateGhostNPC(UUID id, Vector3f position, double gsize, double gangle) {
+	
+    	GameObject sentinel = game.getNPC();
+    
+    	if (sentinel != null) {
+        	// 1. Update Position using Matrix translation
+        	sentinel.setLocalTranslation(new Matrix4f().translation(position.x(), position.y(), position.z()));
+        
+        	// 2. Update Scale (Visual feedback for Behavior Tree)
+        	float s = (float)gsize;
+        	sentinel.setLocalScale(new Matrix4f().scaling(s, s, s));
+
+			// 3. Update Rotation (The 360 Spin)
+        	// Convert the degrees from the server into radians for JOML
+        	float rad = (float)java.lang.Math.toRadians(gangle);
+        	// Apply rotation around the Y-axis
+        	sentinel.setLocalRotation(new Matrix4f().rotationY(rad));
+    	}
+	}
+
+	private GhostNPC findNPC(UUID id) {
+        for (GhostNPC npc : ghostNPCs) {
+            if (npc.getID().equals(id)) {
+                return npc;
+            }
+        }
+        return null;
+    }
+
+	public void removeGhostNPC(UUID id) {
+    	GhostNPC npc = findNPC(id);
+    	if (npc != null) {
+        	game.getEngine().getSceneGraph().removeGameObject(npc);
+        	ghostNPCs.remove(npc);
+    	}
+	}
+
+	public void setNPCsize(UUID id, boolean big) {
+        GhostNPC npc = findNPC(id);
+        if (npc != null) { npc.setSize(big); }
+    }
 	
 	public void updateGhostAvatar(UUID id, Vector3f position, int pieceID)
 	{	

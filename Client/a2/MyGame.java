@@ -80,6 +80,22 @@ public class MyGame extends VariableFrameRateGame
 	private ObjShape terrS;
 	private TextureImage hills, grass;
 
+	// **** MILESTONE 2 - NPC
+	private GameObject npc;
+	private TextureImage npcTx;
+	private ObjShape npcS;
+
+	public ObjShape getNPCshape() { return npcS; }
+	public TextureImage getNPCtexture() { return npcTx; }
+	public GameObject getNPC() { return npc; }
+
+	// **** MILESTONE 2 - Networked Ghost NPCs
+	public void createGhostNPC(UUID ghostID, Vector3f position) {
+    	if (gm != null) {
+        	gm.createGhostNPC(ghostID, position);
+    	}
+	}
+
 	// **** MILESTONE 2 Animation
 	private AnimatedShape kingSRed, kingSBlue;
 
@@ -154,6 +170,9 @@ public class MyGame extends VariableFrameRateGame
 		// Board
 		boardS = new Plane();
 
+		// MILESTONE 2 - NPC Shape
+		npcS = new ImportedModel("NPC.obj");
+
 		// MILESTONE 2 - Animated King Piece Shape
 		kingSRed = new AnimatedShape("King_v2.rkm", "King_v2.rks");
 		kingSRed.loadAnimation("waveSword", "King_v2_waveSword.rka");
@@ -191,6 +210,9 @@ public class MyGame extends VariableFrameRateGame
 		pawntxBlue = new TextureImage("BluePawn_v2.jpg");
 		bishoptxRed = new TextureImage("RedBishop_v2.jpg"); // Texture for the bishop piece
 		bishoptxBlue = new TextureImage("BlueBishop_v2.jpg");
+
+		// MILESTONE 2 - NPC Texture
+		npcTx = new TextureImage("NPCtx.jpg");
 	}
 
 	@Override
@@ -883,6 +905,11 @@ public class MyGame extends VariableFrameRateGame
 		{	// Send the initial join message with a unique identifier for this client
 			System.out.println("sending join message to protocol host");
 			protClient.sendJoinMessage();
+
+			// --- ADDED FOR NPC INITIALIZATION ---
+        	// Request the NPC information from the server right after joining
+        	System.out.println("requesting NPC data");
+        	protClient.askForNPC();
 		}
 	}
 	
