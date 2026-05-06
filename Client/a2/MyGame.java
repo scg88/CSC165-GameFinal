@@ -26,12 +26,16 @@ import java.net.InetAddress;
 import tage.networking.IGameConnection.ProtocolType;
 import java.net.UnknownHostException;
 
+import tage.physics.PhysicsEngine;
+import tage.physics.PhysicsObject;
+import java.util.HashSet;
+
 public class MyGame extends VariableFrameRateGame
 {
 	private static Engine engine;
 	private GhostManager gm;
-	ChessPiece[] playerPieces = new ChessPiece[18];
-	ChessPiece[] opponentPieces = new ChessPiece[18];
+	ChessPiece[] playerPieces = new ChessPiece[16];
+	ChessPiece[] opponentPieces = new ChessPiece[16];
 	int id = 0;
 
 	private boolean paused=false;
@@ -97,6 +101,14 @@ public class MyGame extends VariableFrameRateGame
 	private boolean chessMovement = true;
 	private boolean myTurn = true;
 	private boolean done = false;
+	
+	// **** PHYSICS
+	
+	private PhysicsEngine physicsEngine;
+	private PhysicsObject planeP;
+	private int floorUID;
+	private boolean running = false;
+	boolean physicsRenderingOn = false;
 
 	public MyGame(String serverAddress, int serverPort, String protocol) 
 	{ 
@@ -503,6 +515,57 @@ public class MyGame extends VariableFrameRateGame
 		//keeping keyPressed class for WASD as of now, but can easily move to Action classes if desired
 		
 	}
+	
+	@Override
+	public void initializePhysicsObjects()
+	{
+		float[] gravity = {0f, -9.8f, 0f};
+		physicsEngine = (engine.getSceneGraph()).getPhysicsEngine();
+		physicsEngine.setGravity(gravity);
+		
+		// -- create physics world --
+		float mass = 10.0f;
+		float up[] = {0,1,0};
+		float radius = 1.0f;
+		float height = 1.25f;
+		Vector3f loc;
+		Quaternionf rot;
+		
+		
+		for(int i = 0; i < playerPieces.length; i++)
+		{
+			
+			rot = new Quaternionf();
+			playerPieces[i].setPhysicsObject((engine.getSceneGraph()).addPhysicsCylinder(mass,
+			playerPieces[i].getWorldLocation(), (playerPieces[i].getWorldRotation()).getNormalizedRotation(rot), 1, radius, height));
+			playerPieces[i].getPhysicsObject().setLocation((new float[]{playerPieces[i].getPhysicsObject().getLocation().x(), 
+			playerPieces[i].getPhysicsObject().getLocation().y() + 1.25f, playerPieces[i].getPhysicsObject().getLocation().z()}));
+			playerPieces[i].getPhysicsObject().setBounciness(0.0f);
+			playerPieces[i].getPhysicsObject().disableSleeping();
+			
+			
+			rot = new Quaternionf();
+			opponentPieces[i].setPhysicsObject((engine.getSceneGraph()).addPhysicsCylinder(mass, 
+			opponentPieces[i].getWorldLocation(), (opponentPieces[i].getWorldRotation()).getNormalizedRotation(rot), 1, radius, height));
+			opponentPieces[i].getPhysicsObject().setLocation((new float[]{opponentPieces[i].getPhysicsObject().getLocation().x(), 
+			opponentPieces[i].getPhysicsObject().getLocation().y() + 1.25f, opponentPieces[i].getPhysicsObject().getLocation().z()}));
+			opponentPieces[i].getPhysicsObject().setBounciness(0.0f);
+			opponentPieces[i].getPhysicsObject().disableSleeping();
+			
+		}
+		
+		loc = terr.getWorldLocation();
+		rot = new Quaternionf();
+		(terr.getWorldRotation()).getNormalizedRotation(rot);
+		planeP = (engine.getSceneGraph()).addPhysicsStaticTerrainMesh(loc, rot, hills, 50.0f, 10f, 100);
+		planeP.setBounciness(0.0f);
+		terr.setPhysicsObject(planeP);
+		
+		floorUID = terr.getPhysicsObject().getUID();
+		
+		engine.enableGraphicsWorldRender();
+		//engine.enablePhysicsWorldRender();
+	}
 
 	// ----- GETTERS for use in Action classes -----------
 	public ChessPiece getAvatar() { return avatar; }
@@ -530,6 +593,8 @@ public class MyGame extends VariableFrameRateGame
 	public Board getBoard() {return boardL;}
 	public boolean getTurn() {return myTurn;}
 	public void toggleTurn() {myTurn = !myTurn;}
+	
+	public boolean getRunning(){return running;}
 
 	@Override
 	public void update()
@@ -568,18 +633,8 @@ public class MyGame extends VariableFrameRateGame
 			// Get the actual height of the terrain at this specific (x, z)
     		float groundHeight = terr.getHeight(loc.x, loc.z);
 			//float dolphinOffset = 0.8f; // Offset to keep dolphin above ground.
-			float adjustedHeight = groundHeight; //+ dolphinOffset;
+			float adjustedHeight = groundHeight /*+ dolphinOffset*/;
 			avatar.setLocalLocation(new Vector3f(loc.x, loc.y + vertVel, loc.z));
-
-            // JUMP LOGIC - Apply current vertical velocity to the avatar's position
-            if (avatar.getWorldLocation().y > adjustedHeight) {
-                // If in the air, gravity pulls the velocity down
-                vertVel -= 0.0002f * deltaTime; 
-            } else {
-                // If we hit the ground, stop falling and snap to the floor
-                vertVel = 0.0f;
-                avatar.setLocalLocation(new Vector3f(loc.x, adjustedHeight, loc.z));
-            }
 
 			// DATA CALCULATION FOR HUD
 			int elapsTimeSec = Math.round((float)elapsTime);
@@ -603,6 +658,74 @@ public class MyGame extends VariableFrameRateGame
 			
 			// --- Display moveable tiles logic
 			boardL.showMoves(boardL.validMoves(avatar));
+			
+			// Update Physics
+			if(running)
+			{
+				physicsEngine.update((float)elapsTime/1000f);
+				for(GameObject go: engine.getSceneGraph().getGameObjects())
+				{
+					if(go.getPhysicsObject() != null)
+					{
+						Vector3f oldObjPos, up, newObjPos;
+						
+						//set initial translation
+						loc = go.getPhysicsObject().getLocation();
+						Matrix4f locMat = new Matrix4f();
+						locMat.set(3, 0, loc.x); locMat.set(3, 1, loc.y); locMat.set(3, 2, loc.z);
+						go.setLocalTranslation(locMat);
+						
+						
+						//Offset for chess pieces so the physics object properly aligns with them.
+						if(go.getShape() != terrS)
+						{
+							oldObjPos = go.getWorldLocation();
+							up = go.getLocalUpVector();
+							up.mul(-1.25f);
+							newObjPos = oldObjPos.add(up);
+							go.setLocalLocation(newObjPos);
+						}
+						
+						//set rotation
+						Quaternionf rot = go.getPhysicsObject().getRotation();
+						Matrix4f rotMat = new Matrix4f();
+						rot.get(rotMat);
+						go.setLocalRotation(rotMat);
+					}
+				}
+				
+				physicsEngine.detectCollisions();
+				
+				//List those physics objects that have collided with the piece
+				HashSet<PhysicsObject> newCollisions = avatar.getPhysicsObject().getNewlyCollidedSet();
+				if(newCollisions.size()>0)
+				{
+					System.out.print(avatar.getType() + " Piece collides with ");
+					for(PhysicsObject po: newCollisions)
+					{
+						System.out.print(po + " ");
+						if(po.getUID() != floorUID)
+						{
+							for(int i = 0; i < playerPieces.length; i++)
+							{
+								if(playerPieces[i].getPhysicsObject() == po)
+								{
+									playerPieces[i].getRenderStates().disableRendering();
+								}
+								if(opponentPieces[i].getPhysicsObject() == po)
+								{
+									opponentPieces[i].getRenderStates().disableRendering();
+								}
+							}
+							(engine.getSceneGraph()).removePhysicsObject(po);
+						}
+					}
+					System.out.println();
+					
+					
+				}
+				
+			}
 		}
 
 		// Update both king shapes
@@ -617,6 +740,7 @@ public class MyGame extends VariableFrameRateGame
 			done = true;
 		}
 		//else if(done && elapsTime > 6f){System.out.println("Further Checks. Value is: " + myTurn);}
+		
 		
 	}
 
@@ -688,8 +812,15 @@ public class MyGame extends VariableFrameRateGame
 				else {id++;}
 				avatar = playerPieces[id];
 				break;
+			
+			//PHYSICS CONTROLS
 			case KeyEvent.VK_2:
-			boardL.displayBoard();
+				running = !running;
+				break;
+			case KeyEvent.VK_3:
+				if(!physicsRenderingOn){engine.enablePhysicsWorldRender();}
+				else{engine.disablePhysicsWorldRender();}
+				physicsRenderingOn = !physicsRenderingOn;
 				break;
 
 			// ---- MILESTONE 2: ANIMATION TRIGGERS ----

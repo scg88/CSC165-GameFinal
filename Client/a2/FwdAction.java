@@ -39,7 +39,18 @@ public class FwdAction extends AbstractInputAction
 
 		if(game.getChessM())
 		{
-			game.getAvatar().setLocalTranslation((game.getAvatar().getWorldTranslation()).translate(0f, 0f, 5f*keyValue));
+			if(game.getRunning())
+			{			
+				game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x(), 
+				5f, game.getAvatar().getPhysicsObject().getLocation().z() + 5f*keyValue}));
+			}
+			else
+			{	
+				game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x(), 
+				game.getAvatar().getPhysicsObject().getLocation().y(), game.getAvatar().getPhysicsObject().getLocation().z() + 5f*keyValue}));
+				game.getAvatar().setLocalTranslation((game.getAvatar().getWorldTranslation()).translate(0f, 0f, 5f*keyValue));
+			}
+				
 		}
 		else {
             // 1. Access the TAGE camera
