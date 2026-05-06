@@ -353,6 +353,13 @@ public class MyGame extends VariableFrameRateGame
 		playerPieces[15].setLocalScale((new Matrix4f()).scaling(1.0f));
 		playerPieces[15].getRenderStates().hasLighting(true);
 
+		// MILESTONE 2 - Build NPC
+		npc = new GameObject(GameObject.root(), npcS, npcTx);
+		npc.setLocalTranslation((new Matrix4f()).translation(0f, 0f, 0f));
+		npc.setLocalScale((new Matrix4f()).scaling(1.0f));
+		npc.setLocalRotation((new Matrix4f()).rotationY((float) Math.toRadians(90.0f)));
+		npc.getRenderStates().hasLighting(true);
+
 		// Build the Coordinate Axes so you can see X, Y, and Z
 		x = new GameObject(GameObject.root(), linxS);
 		x.getRenderStates().setColor(new Vector3f(1f, 0f, 0f));
