@@ -29,7 +29,7 @@ public class ProtocolClient extends GameConnectionClient
 	@Override
 	protected void processPacket(Object message)
 	{	String strMessage = (String)message;
-		System.out.println("message received -->" + strMessage);
+		//System.out.println("message received -->" + strMessage);
 		String[] messageTokens = strMessage.split(",");
 		
 		// Game specific protocol to handle the message
@@ -128,7 +128,7 @@ public class ProtocolClient extends GameConnectionClient
 			// Handle NPC INFO (Sent by server every 25ms "tick")
         	// Format: (npcInfo, npcID, x, y, z, size, angle)
 			if(messageTokens[0].compareTo("npcInfo") == 0) {
-    			System.out.println("Received NPC Update: " + messageTokens[2] + ", " + messageTokens[3]);
+    			//System.out.println("Received NPC Update: " + messageTokens[2] + ", " + messageTokens[3]);
 				// Server sends: [0]npcInfo, [1]id, [2]x, [3]y, [4]z, [5]size, [6]angle
     			if (messageTokens.length < 7) return; 
     			try {
