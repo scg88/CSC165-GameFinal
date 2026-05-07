@@ -46,8 +46,8 @@ public class NPC {
     public void updateLocation() {
         // Professor's example has it pacing back and forth
         // COMMENT OUT TO KEEP NPC STILL
-        if (locationX > 10) dir = -0.1;
-        if (locationX < -10) dir = 0.1;
+        if (locationX > 20) dir = -0.1;
+        if (locationX < -20) dir = 0.1;
         locationX += dir;
     }
 
