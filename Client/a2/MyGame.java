@@ -30,6 +30,8 @@ import tage.physics.PhysicsEngine;
 import tage.physics.PhysicsObject;
 import java.util.HashSet;
 
+import tage.audio.*;
+
 public class MyGame extends VariableFrameRateGame
 {
 	private static Engine engine;
@@ -125,6 +127,10 @@ public class MyGame extends VariableFrameRateGame
 	private int floorUID;
 	private boolean running = false;
 	boolean physicsRenderingOn = false;
+	
+	// **** SOUND
+	private IAudioManager audioMgr;
+	private Sound screamSound;
 
 	public MyGame(String serverAddress, int serverPort, String protocol) 
 	{ 
@@ -595,6 +601,27 @@ public class MyGame extends VariableFrameRateGame
 		engine.enableGraphicsWorldRender();
 		//engine.enablePhysicsWorldRender();
 	}
+	
+	@Override
+	public void loadSounds()
+	{
+		AudioResource resource1;
+		audioMgr = engine.getAudioManager();
+		//Sound Source: https://pixabay.com/sound-effects/people-male-death-scream-horror-352706/
+		resource1 = audioMgr.createAudioResource("scream.wav", AudioResourceType.AUDIO_SAMPLE);
+		screamSound = new Sound(resource1, SoundType.SOUND_EFFECT, 100, false);
+		screamSound.initialize(audioMgr);
+		screamSound.setMaxDistance(10.0f);
+		screamSound.setMinDistance(0.5f);
+		screamSound.setRollOff(5.0f);
+	}
+	
+	public void setEarParameters()
+	{
+		Camera camera = (engine.getRenderSystem()).getViewport("LEFT").getCamera();
+		audioMgr.getEar().setLocation(avatar.getWorldLocation());
+		audioMgr.getEar().setOrientation(camera.getN(), new Vector3f(0.0f, 1.0f, 0.0f));
+	}
 
 	// ----- GETTERS for use in Action classes -----------
 	public ChessPiece getAvatar() { return avatar; }
@@ -740,10 +767,16 @@ public class MyGame extends VariableFrameRateGame
 								if(playerPieces[i].getPhysicsObject() == po)
 								{
 									playerPieces[i].getRenderStates().disableRendering();
+									screamSound.setLocation(playerPieces[i].getWorldLocation());
+									setEarParameters();
+									screamSound.play();
 								}
 								if(opponentPieces[i].getPhysicsObject() == po)
 								{
 									opponentPieces[i].getRenderStates().disableRendering();
+									screamSound.setLocation(opponentPieces[i].getWorldLocation());
+									setEarParameters();
+									screamSound.play();
 								}
 							}
 							(engine.getSceneGraph()).removePhysicsObject(po);
