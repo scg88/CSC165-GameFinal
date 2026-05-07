@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 public class Matrix8i
 {

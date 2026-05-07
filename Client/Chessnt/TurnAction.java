@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import tage.input.action.AbstractInputAction;
 import net.java.games.input.Event;
@@ -35,26 +35,29 @@ public class TurnAction extends AbstractInputAction
         }
         
         float rotAmount = rotSpeed * keyValue * (time / 1000.0f);
-
-        if(game.getChessM())
-		{	
-			if(game.getRunning())
-			{			
-				game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x() + 5f*keyValue, 
-				5f, game.getAvatar().getPhysicsObject().getLocation().z()}));
-			}
-			else
+		
+		if(!game.getIsGameDone())
+		{
+			if(game.getChessM())
 			{	
-				game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x() + 5f*keyValue, 
-				game.getAvatar().getPhysicsObject().getLocation().y(), game.getAvatar().getPhysicsObject().getLocation().z()}));
-				game.getAvatar().setLocalTranslation((game.getAvatar().getWorldTranslation()).translate(5f*keyValue, 0f, 0f));
+				if(game.getRunning())
+				{			
+					game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x() + 5f*keyValue, 
+					5f, game.getAvatar().getPhysicsObject().getLocation().z()}));
+				}
+				else
+				{	
+					game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x() + 5f*keyValue, 
+					game.getAvatar().getPhysicsObject().getLocation().y(), game.getAvatar().getPhysicsObject().getLocation().z()}));
+					game.getAvatar().setLocalTranslation((game.getAvatar().getWorldTranslation()).translate(5f*keyValue, 0f, 0f));
+				}
 			}
+			else {
+				Camera cam = game.getEngine().getRenderSystem().getViewport("LEFT").getCamera();
+				cam.yaw(rotAmount);
+			}
+			//protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
 		}
-        else {
-            Camera cam = game.getEngine().getRenderSystem().getViewport("LEFT").getCamera();
-            cam.yaw(rotAmount);
-        }
-		//protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
     } 
 }
 

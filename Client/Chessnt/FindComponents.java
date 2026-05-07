@@ -1,5 +1,5 @@
 // uses JInput library
-package a2;
+package Chessnt;
 
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;

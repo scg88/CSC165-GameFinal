@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import tage.*;
 import tage.input.action.*;
@@ -117,7 +117,7 @@ public class MyGame extends VariableFrameRateGame
 	private Board boardL;
 	private TextureImage tilesT;
 	private boolean chessMovement = true;
-	private boolean myTurn = true;
+	private boolean myTurn;
 	private boolean done = false;
 	
 	// **** PHYSICS
@@ -648,9 +648,16 @@ public class MyGame extends VariableFrameRateGame
 	public boolean getChessM() {return chessMovement;}
 	public Board getBoard() {return boardL;}
 	public boolean getTurn() {return myTurn;}
+	public void setTurn(boolean state) {myTurn = state;}
 	public void toggleTurn() {myTurn = !myTurn;}
 	
 	public boolean getRunning(){return running;}
+	
+	public boolean getIsGameDone()
+	{
+		if(isGameOver || isGameWon){return true;}
+		else{return false;}
+	}
 
 	@Override
 	public void update()
@@ -675,12 +682,16 @@ public class MyGame extends VariableFrameRateGame
     	if (isGameOver) {
 			im = engine.getInputManager();
     		im.update(deltaTime);
+			System.out.println("Game Over; You Lose.");
 			return; 
     	}
 
 		// GAME WIN LOGIC - stop updating game logic and show win message
 		if (isGameWon) {
-
+			im = engine.getInputManager();
+    		im.update(deltaTime);
+			System.out.println("Game Over; You Win.");
+			return; 
 		// MAIN GAME LOGIC - updates only happen if the game isn't won or lost yet
 		} else {
 			Vector3f loc = avatar.getWorldLocation();
@@ -770,6 +781,7 @@ public class MyGame extends VariableFrameRateGame
 									screamSound.setLocation(playerPieces[i].getWorldLocation());
 									setEarParameters();
 									screamSound.play();
+									if(playerPieces[i] == playerPieces[14]){isGameOver = true;}
 								}
 								if(opponentPieces[i].getPhysicsObject() == po)
 								{
@@ -777,6 +789,7 @@ public class MyGame extends VariableFrameRateGame
 									screamSound.setLocation(opponentPieces[i].getWorldLocation());
 									setEarParameters();
 									screamSound.play();
+									if(opponentPieces[i] == opponentPieces[14]){isGameWon = true;}
 								}
 							}
 							(engine.getSceneGraph()).removePhysicsObject(po);
@@ -794,15 +807,19 @@ public class MyGame extends VariableFrameRateGame
     	if (kingSRed != null) kingSRed.updateAnimation();
     	if (kingSBlue != null) kingSBlue.updateAnimation();
 		
-		//Sets up turn-based switching
-		if(!done && elapsTime > 6f)
+		//Sets up turn-based switching.
+		// Doesn't work--Figure out a new way to do it
+		/*
+		if(!done && elapsTime > 10f)
 		{
 			if(gm.isGhostAvatar()){myTurn = false;}
 			System.out.println("Initial Check! Value is " + myTurn);
 			done = true;
 		}
 		//else if(done && elapsTime > 6f){System.out.println("Further Checks. Value is: " + myTurn);}
+		*/
 		
+		//System.out.println("Value is: " + myTurn);
 		
 	}
 

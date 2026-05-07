@@ -8,6 +8,7 @@ import tage.networking.server.IClientInfo;
 public class GameServerUDP extends GameConnectionServer<UUID> 
 {
 	private NPCcontroller npcCtrl;
+	private boolean first = true;
 
 	public GameServerUDP(int localPort, NPCcontroller npc) throws IOException 
 	{	super(localPort, ProtocolType.UDP);
@@ -30,7 +31,13 @@ public class GameServerUDP extends GameConnectionServer<UUID>
 					UUID clientID = UUID.fromString(messageTokens[1]);
 					addClient(ci, clientID);
 					System.out.println("Join request received from - " + clientID.toString());
-					sendJoinedMessage(clientID, true);
+					if(first)
+					{
+						sendJoinedMessage(clientID, true, true);
+						first = false;
+					}
+					else
+						sendJoinedMessage(clientID, true, false);
 				} 
 				catch (IOException e) 
 				{	e.printStackTrace();
@@ -146,16 +153,20 @@ public class GameServerUDP extends GameConnectionServer<UUID>
 
 	// Informs the client who just requested to join the server if their if their 
 	// request was able to be granted. 
-	// Message Format: (join,success) or (join,failure)
+	// Message Format: (join,success,first), (join,success,second), (join,failure,first), or (join,failure,second)
 	
-	public void sendJoinedMessage(UUID clientID, boolean success)
+	public void sendJoinedMessage(UUID clientID, boolean success, boolean first)
 	{	try 
 		{	System.out.println("trying to confirm join");
 			String message = new String("join,");
 			if(success)
-				message += "success";
+				message += "success,";
 			else
-				message += "failure";
+				message += "failure,";
+			if(first)
+				message += "first";
+			else
+				message += "second";
 			sendPacket(message, clientID);
 		} 
 		catch (IOException e) 

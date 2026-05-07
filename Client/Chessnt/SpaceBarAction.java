@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import tage.*;
 import tage.input.action.AbstractInputAction;
@@ -25,14 +25,17 @@ public class SpaceBarAction extends AbstractInputAction {
         // Neutralized for Final Project cleanup
         game.setHUDMessage("Space Bar Pressed - Ready for Chess logic!");
 		
-		if(game.getTurn() || game.getGhostManager().isGhostAvatar())
+		if(!game.getIsGameDone())
 		{
-			move = game.getBoard().movePlayerPiece(game.getAvatar());
-			if (move)
+			if(game.getTurn() || game.getGhostManager().isGhostAvatar())
 			{
-				protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
-				game.toggleTurn();
-				System.out.println("Value is: " + game.getTurn());
+				move = game.getBoard().movePlayerPiece(game.getAvatar());
+				if (move)
+				{
+					protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
+					game.toggleTurn();
+					System.out.println("Value is: " + game.getTurn());
+				}
 			}
 		}
     }

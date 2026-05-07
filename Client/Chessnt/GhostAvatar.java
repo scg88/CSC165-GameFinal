@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import java.util.UUID;
 import tage.*;
@@ -31,6 +31,7 @@ public class GhostAvatar extends GameObject
 		Vector3f newM = game.getBoard().moveEnemyPiece(game.getOpponentPiece(id), oldM);
 		setLocalLocation(newM);
 		game.getOpponentPiece(id).setLocalLocation(newM); 
+		System.out.println("Get rotated dumbass");
 		game.toggleTurn();
 		System.out.println("Value is: " + game.getTurn());
 	}

@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import tage.input.action.AbstractInputAction;
 import net.java.games.input.Event;

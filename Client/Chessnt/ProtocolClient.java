@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -47,7 +47,20 @@ public class ProtocolClient extends GameConnectionClient
 				if(messageTokens[1].compareTo("failure") == 0)
 				{	System.out.println("join failure confirmed");
 					game.setIsConnected(false);
-			}	}
+				}
+				if(messageTokens[2].compareTo("first") == 0)
+				{
+					game.setTurn(false);
+				}
+				else if(messageTokens[2].compareTo("second") == 0)
+				{
+					game.setTurn(true);
+				}
+				else
+				{
+					System.out.println("Error. Position unclear");
+				}
+			}
 			
 			// Handle BYE message
 			// Format: (bye,remoteId)

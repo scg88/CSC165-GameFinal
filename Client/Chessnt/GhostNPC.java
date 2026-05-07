@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import java.util.UUID;
 import tage.*;

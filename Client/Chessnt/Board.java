@@ -1,4 +1,4 @@
-package a2;
+package Chessnt;
 
 import tage.*;
 import org.joml.*;
@@ -438,8 +438,8 @@ public class Board
 		int[][] validMoves = validMoves(piece);
 		int[] currentSpot = currentSpot(piece);
 		// Outside of the board
-		if(piece.getWorldLocation().x() > 17.5f || piece.getWorldLocation().x() < -17.5 || 
-		piece.getWorldLocation().z() > 17.5f || piece.getWorldLocation().z() < -17.5)
+		if(piece.getWorldLocation().x() > 17.6f || piece.getWorldLocation().x() < -17.4 || 
+		piece.getWorldLocation().z() > 17.6f || piece.getWorldLocation().z() < -17.4)
 		{
 			System.out.println("Out of bounds!");
 			situation[0] = 0;
@@ -470,12 +470,17 @@ public class Board
 		int[] currentSpot = new int[2];
 		for(int i = 0; i < 8; i++)
 		{
-			//System.out.println("World Pos: X-" + piece.getWorldLocation().x() + ", Z-" + piece.getWorldLocation().z() + "; Current Checker: i=" 
-			//+ i + ", X/Z-" + ((float)17.5-5*i));
-			if(piece.getWorldLocation().x() == (float)17.5-5*i){currentSpot[1]=i;}
-			if(piece.getWorldLocation().z() == (float)-17.5+5*i){currentSpot[0]=i;}
+			System.out.println("World Pos: X-" + piece.getWorldLocation().x() + ", Z-" + piece.getWorldLocation().z() + "; Current Checker: i=" 
+			+ i + ", X/Z-" + ((float)17.5-5*i));
+			if(closeEnough(piece.getWorldLocation().x(), (float)17.5-5*i)){currentSpot[1]=i;}
+			if(closeEnough(piece.getWorldLocation().z(), (float)-17.5+5*i)){currentSpot[0]=i;}
 		}
 		return currentSpot;
+	}
+	public boolean closeEnough(float num1, float num2)
+	{
+		if(num2 > num1-0.1f && num2<num1+0.1f){return true;}
+		else{return false;}
 	}
 	public String encode(int[] arrayPos)
 	{
@@ -537,10 +542,10 @@ public class Board
 		int[] currentSpot = new int[2];
 		for(int i = 0; i < 8; i++)
 		{
-			//System.out.println("World Pos: X-" + piece.getWorldLocation().x() + ", Z-" + piece.getWorldLocation().z() + "; Current Checker: i=" 
+			//System.out.println("World Pos: X-" + m.x() + ", Z-" + m.z() + "; Current Checker: i=" 
 			//+ i + ", X/Z-" + ((float)17.5-5*i));
-			if(m.x() == (float)17.5-5*i){currentSpot[1]=i;}
-			if(m.z() == (float)-17.5+5*i){currentSpot[0]=i;}
+			if(closeEnough(m.x(),(float)17.5-5*i)){currentSpot[1]=i;}
+			if(closeEnough(m.z(),(float)-17.5+5*i)){currentSpot[0]=i;}
 		}
 		return currentSpot;
 	}
