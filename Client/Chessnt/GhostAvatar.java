@@ -32,7 +32,7 @@ public class GhostAvatar extends GameObject
 		this.currentPieceID = id;
 		Vector3f newM = game.getBoard().moveEnemyPiece(game.getOpponentPiece(id), oldM);
 		setLocalLocation(newM);
-		game.getOpponentPiece(id).setLocalLocation(newM); 
+		game.getOpponentPiece(id).getPhysicsObject().setLocation((new float[] {newM.x(), newM.y()+5f, newM.z()})); 
 		System.out.println("Get rotated dumbass");
 		game.toggleTurn();
 		System.out.println("Value is: " + game.getTurn());
