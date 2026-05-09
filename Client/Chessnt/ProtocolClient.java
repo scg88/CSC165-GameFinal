@@ -9,6 +9,7 @@ import java.util.Vector;
 import org.joml.*;
 
 import tage.*;
+import tage.audio.Sound;
 import tage.networking.client.GameConnectionClient;
 
 public class ProtocolClient extends GameConnectionClient
@@ -185,6 +186,32 @@ public class ProtocolClient extends GameConnectionClient
         			sendIsNearMessage(game.getPieceId());
             	}
         	}
+
+			if (messageTokens[0].compareTo("npcWelcome") == 0) {
+				System.out.println("CLIENT RECEIVED WELCOME PACKET");
+				// Get sound from MyGame
+    			Sound s = game.getWelcomeSound();
+
+    			if (s != null) {
+        			// 2. Get the NPC's current position from the GhostManager
+        			// Since there is only one NPC, we use the dummy ID (all zeros)
+        			UUID dummyID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+        			Vector3f npcPos = ghostManager.getGhostNPC(dummyID).getWorldLocation();
+        			
+					s.setLocation(npcPos);
+        			game.setEarParameters();
+        			s.play();
+    			}
+			}
+
+			if (messageTokens[0].compareTo("playGameLoop") == 0) {
+    			Sound loop = game.getGameLoopSound();
+    			if (loop != null && !loop.getIsPlaying()) {
+        			// Music is usually 2D (headspace), so we don't necessarily need setLocation
+        			// but you can set it to the NPC if you want it to fade as you walk away
+        			loop.play();
+    			}
+			}
 
 		}	
 	}

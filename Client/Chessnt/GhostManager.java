@@ -146,4 +146,12 @@ public class GhostManager
     	return ghostAvatars;
 	}
 
+	public GameObject getGhostNPC(UUID id) {
+    // If you store it in a Map:
+    // return npcGhostList.get(id); 
+    
+    // Or if you just have a single variable for the Sentinel:
+    return game.getNPC(); 
+	}
+
 }
