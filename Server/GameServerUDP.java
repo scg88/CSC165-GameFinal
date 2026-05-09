@@ -255,4 +255,25 @@ public class GameServerUDP extends GameConnectionServer<UUID>
 		catch (IOException e) 
 		{	e.printStackTrace();
 	}	}
+
+	public void sendNPCWelcomeSound() {
+    	try {
+        	// "npcWelcome" is our custom protocol string
+        	String message = "npcWelcome";
+        	sendPacketToAll(message);
+    	} catch (IOException e) {
+        	e.printStackTrace();
+    	}
+	}
+
+	public void sendGameLoopSound() {
+    	try {
+        	String message = "playGameLoop";
+        	// Using a dummy UUID to avoid that NullPointerException you saw earlier
+        	forwardPacketToAll(message, UUID.fromString("00000000-0000-0000-0000-000000000000"));
+    	} catch (IOException e) { 
+			e.printStackTrace(); 
+		}
+	}
+
 }

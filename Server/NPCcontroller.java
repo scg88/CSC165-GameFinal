@@ -1,4 +1,6 @@
 import java.util.Random;
+
+//import Chessnt.MyGame;
 import tage.ai.behaviortrees.*;
 
 public class NPCcontroller {
@@ -84,11 +86,9 @@ public class NPCcontroller {
         bt.insertAtRoot(new BTSequence(10));
         bt.insert(10, new AvatarNear(server, this, npc, false));
         bt.insert(10, new GetBig(npc)); // Action 1 : grow (Professor's example)
-        bt.insert(10, new RotateNPC(npc, this)); // Action 2: spin (New example)
-        //bt.insert(10, new GetSmall(npc, this)); // Action 3: shrink (Professor's example)
-        //bt.insert(10, new BTWait(3000));
+        bt.insert(10, new RotateNPC(npc, this, server)); // Action 2: spin (New example)
 
-        // sequence 2: If Avatar is NOT near, and 5 seconds have passed, then grow big (just for fun)
+        // sequence 2: If Avatar is NOT near, and .5 seconds have passed, then grow big (just for fun)
         bt.insertAtRoot(new BTSequence(20));
         bt.insert(20, new OneSecPassed(npc, this, false)); // Professor's Time check example
         bt.insert(20, new GetSmall(npc, this)); // Professor's example

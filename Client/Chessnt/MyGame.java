@@ -131,7 +131,7 @@ public class MyGame extends VariableFrameRateGame
 	
 	// **** SOUND
 	private IAudioManager audioMgr;
-	private Sound screamSound;
+	private Sound screamSound, welcomeSound, gameLoopSound;
 
 	public MyGame(String serverAddress, int serverPort, String protocol) 
 	{ 
@@ -616,15 +616,33 @@ public class MyGame extends VariableFrameRateGame
 	@Override
 	public void loadSounds()
 	{
-		AudioResource resource1;
+		AudioResource resource1, resource2;
 		audioMgr = engine.getAudioManager();
-		//Sound Source: https://pixabay.com/sound-effects/people-male-death-scream-horror-352706/
+		
+		
+		// Scream Sound Source: https://pixabay.com/sound-effects/people-male-death-scream-horror-352706/
 		resource1 = audioMgr.createAudioResource("scream.wav", AudioResourceType.AUDIO_SAMPLE);
-		screamSound = new Sound(resource1, SoundType.SOUND_EFFECT, 200, false);
+		screamSound = new Sound(resource1, SoundType.SOUND_EFFECT, 100, false);
 		screamSound.initialize(audioMgr);
 		screamSound.setMaxDistance(10.0f);
 		screamSound.setMinDistance(0.5f);
 		screamSound.setRollOff(5.0f);
+
+		// Welcome Message Sound Source: Created in Reason13 by Spencer Green
+		resource2 = audioMgr.createAudioResource("WelcomeToChessnt.wav", AudioResourceType.AUDIO_SAMPLE);
+    	welcomeSound = new Sound(resource2, SoundType.SOUND_EFFECT, 70, false);
+   		welcomeSound.initialize(audioMgr);
+		welcomeSound.setMaxDistance(15.0f);
+    	welcomeSound.setMinDistance(0.5f);
+    	welcomeSound.setRollOff(5.0f);
+
+		AudioResource resLoop = audioMgr.createAudioResource("GameLoop_S.wav", AudioResourceType.AUDIO_SAMPLE);
+    	gameLoopSound = new Sound(resLoop, SoundType.SOUND_EFFECT, 50, false); // true = looping
+    	gameLoopSound.initialize(audioMgr);
+		gameLoopSound.setMaxDistance(15.0f);
+		gameLoopSound.setMinDistance(0.5f);
+		gameLoopSound.setRollOff(5.0f);
+		
 	}
 	
 	public void setEarParameters()
@@ -664,6 +682,9 @@ public class MyGame extends VariableFrameRateGame
 	
 	public boolean getRunning(){return running;}
 	public void setRunning(boolean state) {running = state;}
+
+	public Sound getWelcomeSound() { return welcomeSound; }
+	public Sound getGameLoopSound() { return gameLoopSound; }
 	
 	public boolean getIsGameDone()
 	{
@@ -679,6 +700,8 @@ public class MyGame extends VariableFrameRateGame
 		currFrameTime = System.currentTimeMillis();
 		float deltaTime = (float) (currFrameTime - lastFrameTime);
     	if (!paused) elapsTime += deltaTime / 1000.0;
+
+		setEarParameters(); // Update ear parameters for 3D sound each frame
 
 		// Update the input manager to process any new input events
 		im = engine.getInputManager();
