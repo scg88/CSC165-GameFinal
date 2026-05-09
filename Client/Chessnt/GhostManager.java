@@ -141,4 +141,9 @@ public class GhostManager
 	{
 		return ghostAvatars.isEmpty();
 	}
+
+	public Vector<GhostAvatar> getGhostAvatars() {
+    	return ghostAvatars;
+	}
+
 }

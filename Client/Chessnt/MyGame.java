@@ -398,39 +398,45 @@ public class MyGame extends VariableFrameRateGame
     	// Global Ambient: Providing a base level of visibility
     	Light.setGlobalAmbient(0.5f, 0.5f, 0.5f);
 
-		// *** Lights leftover from A2.
-		// *** REUSE AS NEEDED
-    	// Light 1 (origin)
+		// *** LIGHTS FOR : Avatar, NPC, and the Ghost
+    	// Light 1 - Avatar (White Light)
     	light1 = new Light();
-    	light1.setDiffuse(2.0f, 2.0f, 2.0f);
-    	light1.setLocation(new Vector3f(-3.0f, 5.0f, 3.0f));
+    	light1.setDiffuse(1.0f, 1.0f, 1.0f);
+		light1.setSpecular(0.0f, 0.0f, 1.0f);
+    	//light1.setLocation(new Vector3f(-3.0f, 5.0f, 3.0f));
 		light1.setConstantAttenuation(1.0f);
 		light1.setLinearAttenuation(0.05f);
 		light1.setQuadraticAttenuation(0.005f); 
     	(engine.getSceneGraph()).addLight(light1);
-    	// Light 2
+
+    	// Light 2 - NPC (Green / Cyan)
     	light2 = new Light();
-    	light2.setDiffuse(0.0f, 2.0f, 4.0f);
-    	light2.setLocation(new Vector3f(19.0f, 5.0f, -21.0f));
+    	light2.setDiffuse(0.0f, 1.0f, 0.0f);
+		light2.setSpecular(1.0f, 1.0f, 0.0f);
+    	//light2.setLocation(new Vector3f(19.0f, 5.0f, -21.0f));
 		light2.setConstantAttenuation(1.0f);
-		light2.setLinearAttenuation(0.05f);
-		light2.setQuadraticAttenuation(0.005f);
+		light2.setLinearAttenuation(0.01f);
+		light2.setQuadraticAttenuation(0.001f);
     	(engine.getSceneGraph()).addLight(light2);
-    	// Light 3
+
+    	// Light 3 - Ghost (Yellow / Gold)
     	light3 = new Light();
-    	light3.setDiffuse(2.0f, 0.0f, 2.0f); // Purple
-    	light3.setLocation(new Vector3f(32.0f, 5.0f, 4.0f));
+    	light3.setDiffuse(1.0f, 1.0f, 0.0f); 
+		light3.setSpecular(1.0f, 0.84f, 0.0f);
+    	//light3.setLocation(new Vector3f(32.0f, 5.0f, 4.0f));
 		light3.setConstantAttenuation(1.0f);
 		light3.setLinearAttenuation(0.05f);
 		light3.setQuadraticAttenuation(0.005f);
     	(engine.getSceneGraph()).addLight(light3);
-    	// Light 4
+
+    	// Light 4 (origin) - 
     	light4 = new Light();
-    	light4.setDiffuse(4.0f, 0.0f, 0.0f); // Pure Yellow (Full Red + Full Green)
-    	light4.setLocation(new Vector3f(2.0f, 5.0f, -26.0f));
+    	light4.setDiffuse(1.0f, 1.0f, 1.0f); // Pure Yellow
+		light4.setSpecular(1.0f, 1.0f, 1.0f);
+    	light4.setLocation(new Vector3f(0.0f, 5.0f, -0.0f));
 		light4.setConstantAttenuation(1.0f);
-		light4.setLinearAttenuation(0.05f);
-		light4.setQuadraticAttenuation(0.005f);
+		light4.setLinearAttenuation(0.01f);
+		light4.setQuadraticAttenuation(0.001f);
     	(engine.getSceneGraph()).addLight(light4);
 }
 
@@ -616,7 +622,7 @@ public class MyGame extends VariableFrameRateGame
 		audioMgr = engine.getAudioManager();
 		//Sound Source: https://pixabay.com/sound-effects/people-male-death-scream-horror-352706/
 		resource1 = audioMgr.createAudioResource("scream.wav", AudioResourceType.AUDIO_SAMPLE);
-		screamSound = new Sound(resource1, SoundType.SOUND_EFFECT, 100, false);
+		screamSound = new Sound(resource1, SoundType.SOUND_EFFECT, 200, false);
 		screamSound.initialize(audioMgr);
 		screamSound.setMaxDistance(10.0f);
 		screamSound.setMinDistance(0.5f);
@@ -841,7 +847,37 @@ public class MyGame extends VariableFrameRateGame
 		*/
 		
 		//System.out.println("Value is: " + myTurn);
-		
+
+		// --- LIGHTING SNAP LOGIC ---
+		// Update Light 1 to follow the Avatar
+    	if (avatar != null && light1 != null) {
+        	Vector3f aPos = avatar.getWorldLocation();
+        	light1.setLocation(new Vector3f(aPos.x(), aPos.y() + 2.5f, aPos.z()));
+    	}
+
+		// Update Light 2 to follow the NPC
+		if (npc != null && light2 != null) {
+        	Vector3f nPos = npc.getWorldLocation();
+        	light2.setLocation(new Vector3f(nPos.x(), nPos.y() + 2.5f, nPos.z()));
+    	}
+
+		// Update Light 3 to follow the ghost avatar (if it exists)
+		if (gm != null && light3 != null) {
+    		Vector<GhostAvatar> ghosts = gm.getGhostAvatars();
+    
+    		if (ghosts != null && !ghosts.isEmpty()) {
+        		GhostAvatar targetGhost = ghosts.get(0); // Grab the first ghost player in the list
+				int id = targetGhost.getCurrentPieceID(); // Get the piece ID that the ghost is currently controlling
+				Vector3f gPos = getOpponentPiece(id).getWorldLocation(); // Option 1: Get the position of the piece the ghost is controlling (if you want the light to follow the piece rather than the ghost itself)
+				
+				// Vector3f gPos = targetGhost.getPosition(); // OPTION 2: Get the ghost's actual position (if you want the light to follow the ghost itself rather than the piece it's controlling)
+        		
+        		light3.setLocation(new Vector3f(gPos.x(), gPos.y() + 2.5f, gPos.z())); // Snap the light to the piece
+    		} else {
+        		// If no player 2 is connected, hide the light underground
+        		light3.setLocation(new Vector3f(0f, -100f, 0f));
+    		}
+		}
 	}
 
 	// VIEWPORT ZOOM - as per prompt

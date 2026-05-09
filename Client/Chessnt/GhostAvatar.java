@@ -16,6 +16,7 @@ public class GhostAvatar extends GameObject
 {
 	UUID uuid;
 	private MyGame game;
+	private int currentPieceID = 0;
 
 	public GhostAvatar(MyGame g, UUID id, ObjShape s, TextureImage t, Vector3f p) 
 	{	
@@ -28,6 +29,7 @@ public class GhostAvatar extends GameObject
 	public UUID getID() { return uuid; }
 	public void setPosition(Vector3f oldM, int id) 
 	{ 
+		this.currentPieceID = id;
 		Vector3f newM = game.getBoard().moveEnemyPiece(game.getOpponentPiece(id), oldM);
 		setLocalLocation(newM);
 		game.getOpponentPiece(id).getPhysicsObject().setLocation((new float[] {newM.x(), newM.y()+5f, newM.z()})); 
@@ -36,4 +38,5 @@ public class GhostAvatar extends GameObject
 		System.out.println("Value is: " + game.getTurn());
 	}
 	public Vector3f getPosition() { return getWorldLocation(); }
+	public int getCurrentPieceID() { return currentPieceID; }
 }
