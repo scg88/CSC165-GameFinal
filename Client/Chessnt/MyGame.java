@@ -52,9 +52,9 @@ public class MyGame extends VariableFrameRateGame
 	private float vertVel = 0.0f; // Vertical velocity for jumping and gravity
 
 	private InputManager im;
-	private GameObject x, y, z, home;
-	private ObjShape linxS, linyS, linzS, homeS, ghostS;
-	private TextureImage bricktx, ghostT;
+	private GameObject x, y, z, home, selector;
+	private ObjShape linxS, linyS, linzS, homeS, ghostS, selectorS;
+	private TextureImage bricktx, ghostT, selectorT;
 	private Light light1, light2, light3, light4;
 	
 	private String serverAddress;
@@ -187,6 +187,8 @@ public class MyGame extends VariableFrameRateGame
 		kingSBlue = new AnimatedShape("King_v2.rkm", "King_v2.rks");
 		kingSBlue.loadAnimation("waveSword", "King_v2_waveSword.rka");
 		kingSBlue.loadAnimation("waveHand", "King_v2_waveHand.rka");
+		
+		selectorS = new ImportedModel("selector.obj");
 	}
 
 	@Override
@@ -219,6 +221,8 @@ public class MyGame extends VariableFrameRateGame
 
 		// MILESTONE 2 - NPC Texture
 		npcTx = new TextureImage("NPCtx.jpg");
+		
+		selectorT = new TextureImage("selector.png");
 	}
 
 	@Override
@@ -249,6 +253,9 @@ public class MyGame extends VariableFrameRateGame
     	terr.getRenderStates().setTiling(1);
     	terr.getRenderStates().setTileFactor(20);
 		terr.getRenderStates().hasLighting(true);
+		
+		selector = new GameObject(GameObject.root(), selectorS, selectorT);
+		selector.setLocalScale((new Matrix4f()).scaling(2.5f));
 
 		
 		//----------BUILD THE PIECES----------
@@ -763,44 +770,58 @@ public class MyGame extends VariableFrameRateGame
 				
 				physicsEngine.detectCollisions();
 				
-				//List those physics objects that have collided with the piece
-				HashSet<PhysicsObject> newCollisions = avatar.getPhysicsObject().getNewlyCollidedSet();
-				if(newCollisions.size()>0)
+				if(myTurn || gm.isGhostAvatar())
 				{
-					System.out.print(avatar.getType() + " Piece collides with ");
-					for(PhysicsObject po: newCollisions)
+					//List those physics objects that have collided with the piece
+					HashSet<PhysicsObject> newCollisions = avatar.getPhysicsObject().getNewlyCollidedSet();
+					if(newCollisions.size()>0)
 					{
-						System.out.print(po + " ");
-						if(po.getUID() != floorUID)
+						System.out.print(avatar.getType() + " Piece collides with ");
+						for(PhysicsObject po: newCollisions)
 						{
-							for(int i = 0; i < playerPieces.length; i++)
+							System.out.print(po + " ");
+							if(po.getUID() != floorUID)
 							{
-								if(playerPieces[i].getPhysicsObject() == po)
+								for(int i = 0; i < playerPieces.length; i++)
 								{
-									playerPieces[i].getRenderStates().disableRendering();
-									screamSound.setLocation(playerPieces[i].getWorldLocation());
-									setEarParameters();
-									screamSound.play();
-									if(playerPieces[i] == playerPieces[14]){isGameOver = true;}
+									if(opponentPieces[i].getPhysicsObject() == po)
+									{
+										opponentPieces[i].getRenderStates().disableRendering();
+										screamSound.setLocation(opponentPieces[i].getWorldLocation());
+										setEarParameters();
+										screamSound.play();
+										if(opponentPieces[i] == opponentPieces[14]){isGameWon = true;}
+									}
 								}
-								if(opponentPieces[i].getPhysicsObject() == po)
+								(engine.getSceneGraph()).removePhysicsObject(po);
+							}
+						}
+						System.out.println();
+					}
+				}
+				else
+				{
+					for(ChessPiece piece: playerPieces)
+					{
+						HashSet<PhysicsObject> newCollisions = piece.getPhysicsObject().getNewlyCollidedSet();
+						if(newCollisions.size() > 0)
+						{
+							for(PhysicsObject po: newCollisions)
+							{
+								if(po.getUID() != floorUID)
 								{
-									opponentPieces[i].getRenderStates().disableRendering();
-									screamSound.setLocation(opponentPieces[i].getWorldLocation());
+									piece.getRenderStates().disableRendering();
+									screamSound.setLocation(piece.getWorldLocation());
 									setEarParameters();
 									screamSound.play();
-									if(opponentPieces[i] == opponentPieces[14]){isGameWon = true;}
+									if(piece == playerPieces[14]){isGameOver = true;}
 								}
 							}
-							(engine.getSceneGraph()).removePhysicsObject(po);
 						}
 					}
-					System.out.println();
-					
-					
 				}
-				
 			}
+			selector.setLocalTranslation(avatar.getWorldTranslation());
 		}
 
 		// Update both king shapes
