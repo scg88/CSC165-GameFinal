@@ -879,7 +879,7 @@ public class MyGame extends VariableFrameRateGame
 								System.out.println();
 								(engine.getSceneGraph()).removePhysicsObject(opPiece.getPhysicsObject());
 								opPiece.setLocalLocation(boardL.correctPhysicsOffset(opPiece));
-								opPiece.setLocalRotation(new Matrix4f());
+								opPiece.setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
 								chessPhysics(opPiece);
 								firstRun = true;
 								toggleTurn();
@@ -895,20 +895,6 @@ public class MyGame extends VariableFrameRateGame
 		// Update both king shapes
     	if (kingSRed != null) kingSRed.updateAnimation();
     	if (kingSBlue != null) kingSBlue.updateAnimation();
-		
-		//Sets up turn-based switching.
-		// Doesn't work--Figure out a new way to do it
-		/*
-		if(!done && elapsTime > 10f)
-		{
-			if(gm.isGhostAvatar()){myTurn = false;}
-			System.out.println("Initial Check! Value is " + myTurn);
-			done = true;
-		}
-		//else if(done && elapsTime > 6f){System.out.println("Further Checks. Value is: " + myTurn);}
-		*/
-		
-		//System.out.println("Value is: " + myTurn);
 
 		// --- LIGHTING SNAP LOGIC ---
 		// Update Light 1 to follow the Avatar
