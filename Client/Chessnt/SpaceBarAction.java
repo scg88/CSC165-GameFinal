@@ -33,8 +33,11 @@ public class SpaceBarAction extends AbstractInputAction {
 				if (move)
 				{
 					protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
-					game.toggleTurn();
-					System.out.println("Value is: " + game.getTurn());
+					game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x(),
+					game.getAvatar().getPhysicsObject().getLocation().y()+5f, game.getAvatar().getPhysicsObject().getLocation().z()}));
+					game.setRunning(true);
+					//game.toggleTurn();
+					//System.out.println("Value is: " + game.getTurn());
 				}
 			}
 		}

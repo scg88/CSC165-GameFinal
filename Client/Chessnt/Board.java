@@ -562,4 +562,10 @@ public class Board
 		worldPos.set((float)17.5-5*pos[1],0f, (float)-17.5+5*pos[0]);
 		return worldPos;
 	}
+	
+	public Vector3f correctPhysicsOffset(ChessPiece piece)
+	{
+		int[] position = decode(piece.getCNPos());
+		return (new Vector3f((float)17.5-5*position[1], 0f, (float)-17.5+5*position[0]));
+	}
 }

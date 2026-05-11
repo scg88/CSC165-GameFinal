@@ -125,7 +125,8 @@ public class MyGame extends VariableFrameRateGame
 	private PhysicsEngine physicsEngine;
 	private PhysicsObject planeP;
 	private int floorUID;
-	private boolean running = false;
+	private boolean running = true;
+	private boolean firstRun = true;
 	boolean physicsRenderingOn = false;
 	
 	// **** SOUND
@@ -577,34 +578,15 @@ public class MyGame extends VariableFrameRateGame
 		physicsEngine.setGravity(gravity);
 		
 		// -- create physics world --
-		float mass = 10.0f;
-		float up[] = {0,1,0};
-		float radius = 1.0f;
-		float height = 1.25f;
 		Vector3f loc;
 		Quaternionf rot;
 		
 		
 		for(int i = 0; i < playerPieces.length; i++)
 		{
+			chessPhysics(playerPieces[i]);
 			
-			rot = new Quaternionf();
-			playerPieces[i].setPhysicsObject((engine.getSceneGraph()).addPhysicsCylinder(mass,
-			playerPieces[i].getWorldLocation(), (playerPieces[i].getWorldRotation()).getNormalizedRotation(rot), 1, radius, height));
-			playerPieces[i].getPhysicsObject().setLocation((new float[]{playerPieces[i].getPhysicsObject().getLocation().x(), 
-			playerPieces[i].getPhysicsObject().getLocation().y() + 1.25f, playerPieces[i].getPhysicsObject().getLocation().z()}));
-			playerPieces[i].getPhysicsObject().setBounciness(0.0f);
-			playerPieces[i].getPhysicsObject().disableSleeping();
-			
-			
-			rot = new Quaternionf();
-			opponentPieces[i].setPhysicsObject((engine.getSceneGraph()).addPhysicsCylinder(mass, 
-			opponentPieces[i].getWorldLocation(), (opponentPieces[i].getWorldRotation()).getNormalizedRotation(rot), 1, radius, height));
-			opponentPieces[i].getPhysicsObject().setLocation((new float[]{opponentPieces[i].getPhysicsObject().getLocation().x(), 
-			opponentPieces[i].getPhysicsObject().getLocation().y() + 1.25f, opponentPieces[i].getPhysicsObject().getLocation().z()}));
-			opponentPieces[i].getPhysicsObject().setBounciness(0.0f);
-			opponentPieces[i].getPhysicsObject().disableSleeping();
-			
+			chessPhysics(opponentPieces[i]);
 		}
 		
 		loc = terr.getWorldLocation();
@@ -618,6 +600,22 @@ public class MyGame extends VariableFrameRateGame
 		
 		engine.enableGraphicsWorldRender();
 		//engine.enablePhysicsWorldRender();
+	}
+	
+	public void chessPhysics(ChessPiece piece)
+	{
+		float mass = 10.0f;
+		float radius = 1.0f;
+		float height = 1.25f;
+		Quaternionf rot;
+		
+		rot = new Quaternionf();
+		piece.setPhysicsObject((engine.getSceneGraph()).addPhysicsCylinder(mass,
+		piece.getWorldLocation(), (piece.getWorldRotation()).getNormalizedRotation(rot), 1, radius, height));
+		piece.getPhysicsObject().setLocation((new float[]{piece.getPhysicsObject().getLocation().x(), 
+		piece.getPhysicsObject().getLocation().y() + 1.25f, piece.getPhysicsObject().getLocation().z()}));
+		piece.getPhysicsObject().setBounciness(0.0f);
+		piece.getPhysicsObject().disableSleeping();
 	}
 	
 	@Override
@@ -688,6 +686,7 @@ public class MyGame extends VariableFrameRateGame
 	public void toggleTurn() {myTurn = !myTurn;}
 	
 	public boolean getRunning(){return running;}
+	public void setRunning(boolean state) {running = state;}
 
 	public Sound getWelcomeSound() { return welcomeSound; }
 	public Sound getGameLoopSound() { return gameLoopSound; }
@@ -803,53 +802,93 @@ public class MyGame extends VariableFrameRateGame
 				}
 				
 				physicsEngine.detectCollisions();
-				
-				if(myTurn || gm.isGhostAvatar())
+				if(firstRun)
 				{
-					//List those physics objects that have collided with the piece
-					HashSet<PhysicsObject> newCollisions = avatar.getPhysicsObject().getNewlyCollidedSet();
-					if(newCollisions.size()>0)
-					{
-						System.out.print(avatar.getType() + " Piece collides with ");
-						for(PhysicsObject po: newCollisions)
-						{
-							System.out.print(po + " ");
-							if(po.getUID() != floorUID)
-							{
-								for(int i = 0; i < playerPieces.length; i++)
-								{
-									if(opponentPieces[i].getPhysicsObject() == po)
-									{
-										opponentPieces[i].getRenderStates().disableRendering();
-										screamSound.setLocation(opponentPieces[i].getWorldLocation());
-										setEarParameters();
-										screamSound.play();
-										if(opponentPieces[i] == opponentPieces[14]){isGameWon = true;}
-									}
-								}
-								(engine.getSceneGraph()).removePhysicsObject(po);
-							}
-						}
-						System.out.println();
-					}
+					running = false; 
+					firstRun=false; 
+					System.out.println("X: " + avatar.getPhysicsObject().getLocation().x()+ 
+					" Y: " + avatar.getPhysicsObject().getLocation().y()+ 
+					" Z: " + avatar.getPhysicsObject().getLocation().z());
 				}
 				else
 				{
-					for(ChessPiece piece: playerPieces)
+					if(myTurn || gm.isGhostAvatar())
 					{
-						HashSet<PhysicsObject> newCollisions = piece.getPhysicsObject().getNewlyCollidedSet();
-						if(newCollisions.size() > 0)
+						//List those physics objects that have collided with the piece
+						HashSet<PhysicsObject> newCollisions = avatar.getPhysicsObject().getNewlyCollidedSet();
+						if(newCollisions.size()>0)
 						{
+							System.out.print(avatar.getType() + " Piece collides with ");
 							for(PhysicsObject po: newCollisions)
 							{
+								System.out.print(po + " ");
 								if(po.getUID() != floorUID)
 								{
-									piece.getRenderStates().disableRendering();
-									screamSound.setLocation(piece.getWorldLocation());
-									setEarParameters();
-									screamSound.play();
-									if(piece == playerPieces[14]){isGameOver = true;}
+									for(int i = 0; i < playerPieces.length; i++)
+									{
+										if(opponentPieces[i].getPhysicsObject() == po)
+										{
+											opponentPieces[i].getRenderStates().disableRendering();
+											screamSound.setLocation(opponentPieces[i].getWorldLocation());
+											setEarParameters();
+											screamSound.play();
+											if(opponentPieces[i] == opponentPieces[14]){isGameWon = true;}
+										}
+									}
+									(engine.getSceneGraph()).removePhysicsObject(po);
 								}
+							}
+							System.out.println();
+							(engine.getSceneGraph()).removePhysicsObject(avatar.getPhysicsObject());
+							avatar.setLocalLocation(boardL.correctPhysicsOffset(avatar));
+							avatar.setLocalRotation(new Matrix4f());
+							chessPhysics(avatar);
+							firstRun = true;
+							toggleTurn();
+							System.out.println("Value is: " + myTurn);
+						}
+					}
+					else
+					{
+						for(ChessPiece opPiece: opponentPieces)
+						{
+							HashSet<PhysicsObject> newCollisions = opPiece.getPhysicsObject().getNewlyCollidedSet();
+							if(newCollisions.size() > 0)
+							{
+								System.out.print("Enemy " + avatar.getType() + " Piece collides with ");
+								for(PhysicsObject po: newCollisions)
+								{
+									System.out.print(po + " ");
+									if(po.getUID() != floorUID)
+									{
+										for(ChessPiece piece: playerPieces)
+										{
+											if(piece.getPhysicsObject() == po)
+											{
+												piece.getRenderStates().disableRendering();
+												screamSound.setLocation(piece.getWorldLocation());
+												setEarParameters();
+												screamSound.play();
+												if(piece == playerPieces[14]){isGameOver = true;}
+											}
+											(engine.getSceneGraph()).removePhysicsObject(po);
+											if(piece == avatar)
+											{
+												if (id == 15) {id = 0;}
+												else {id++;}
+												avatar = playerPieces[id];
+											}
+										}
+									}
+								}
+								System.out.println();
+								(engine.getSceneGraph()).removePhysicsObject(opPiece.getPhysicsObject());
+								opPiece.setLocalLocation(boardL.correctPhysicsOffset(opPiece));
+								opPiece.setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
+								chessPhysics(opPiece);
+								firstRun = true;
+								toggleTurn();
+								System.out.println("Value is: " + myTurn);
 							}
 						}
 					}
@@ -861,20 +900,6 @@ public class MyGame extends VariableFrameRateGame
 		// Update both king shapes
     	if (kingSRed != null) kingSRed.updateAnimation();
     	if (kingSBlue != null) kingSBlue.updateAnimation();
-		
-		//Sets up turn-based switching.
-		// Doesn't work--Figure out a new way to do it
-		/*
-		if(!done && elapsTime > 10f)
-		{
-			if(gm.isGhostAvatar()){myTurn = false;}
-			System.out.println("Initial Check! Value is " + myTurn);
-			done = true;
-		}
-		//else if(done && elapsTime > 6f){System.out.println("Further Checks. Value is: " + myTurn);}
-		*/
-		
-		//System.out.println("Value is: " + myTurn);
 
 		// --- LIGHTING SNAP LOGIC ---
 		// Update Light 1 to follow the Avatar

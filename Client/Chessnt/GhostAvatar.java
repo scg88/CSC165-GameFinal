@@ -24,6 +24,7 @@ public class GhostAvatar extends GameObject
 		uuid = id;
 		game = g;
 		setPosition(p, 0);
+		getRenderStates().disableRendering();
 	}
 	
 	public UUID getID() { return uuid; }
@@ -33,9 +34,10 @@ public class GhostAvatar extends GameObject
 		Vector3f newM = game.getBoard().moveEnemyPiece(game.getOpponentPiece(id), oldM);
 		setLocalLocation(newM);
 		game.getOpponentPiece(id).getPhysicsObject().setLocation((new float[] {newM.x(), newM.y()+5f, newM.z()})); 
-		System.out.println("Get rotated dumbass");
-		game.toggleTurn();
-		System.out.println("Value is: " + game.getTurn());
+		game.setRunning(true);
+		//System.out.println("Get rotated dumbass");
+		//game.toggleTurn();
+		//System.out.println("Value is: " + game.getTurn());
 	}
 	public Vector3f getPosition() { return getWorldLocation(); }
 	public int getCurrentPieceID() { return currentPieceID; }
