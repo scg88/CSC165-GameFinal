@@ -28,7 +28,7 @@ public class TurnAction extends AbstractInputAction {
         float finalMove;
         if (isKeyboard) {
             // 2. Keyboard Logic (A and D keys)
-            float direction = componentName.equalsIgnoreCase("D") ? 1.0f : -1.0f;
+            float direction = componentName.equalsIgnoreCase("A") ? 1.0f : -1.0f;
             finalMove = 5.0f * direction;
         } else {
             // 3. Analog Stick Logic (Continuous movement)

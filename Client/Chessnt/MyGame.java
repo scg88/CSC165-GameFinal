@@ -665,7 +665,9 @@ public class MyGame extends VariableFrameRateGame
 
 	public GameObject getHome() { return home; }
 	public void setIsGameWon(boolean b) { isGameWon = b; }
+
 	public void setVertVel(float v) { vertVel = v; }
+	public float getVertVel() { return vertVel; }
 
 	public boolean getAxesVisible() { return axesVisible; }
 	public void setAxesVisible(boolean b) { axesVisible = b; }
