@@ -501,6 +501,7 @@ public class MyGame extends VariableFrameRateGame
 		SpaceBarAction spaceAction = new SpaceBarAction(this, protClient);
 		JumpAction jumpAction = new JumpAction(this);
 		ToggleAxesAction toggleAxesAction = new ToggleAxesAction(this);
+		ChessMoveAction chessMoveAction = new ChessMoveAction(this);
 
 		// Controller mappings (using JInput identifiers for an 8BitDo SN30 pro+ controller)
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._1,
@@ -559,7 +560,11 @@ public class MyGame extends VariableFrameRateGame
 		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.G, 
 			toggleAxesAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 
-		//Room for more mappings...
+		// Register D-Pad support for movement
+		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Axis.POV, 
+    		chessMoveAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+
+			//Room for more mappings...
 		//keeping keyPressed class for WASD as of now, but can easily move to Action classes if desired
 		
 	}
@@ -937,52 +942,37 @@ public class MyGame extends VariableFrameRateGame
  
 	@Override
 	public void keyPressed(KeyEvent e)
-	{	Vector3f loc, fwd, newLocation, up , right;
-		Camera cam = engine.getRenderSystem().getViewport("LEFT").getCamera();
-		
-		float moveSpeed = 0.5f; // units per key press
-    	float turnSpeed = 3.0f; // degrees
-		float turnAmount = (float)Math.toRadians(5.0f);
-		
-		
+	{	
 		switch (e.getKeyCode())
 		{	
-			case KeyEvent.VK_ESCAPE:
-            System.exit(0);
-            break;
-
-			//case KeyEvent.VK_C: counter++; break;
-			case KeyEvent.VK_1: paused = !paused; break;
-			case KeyEvent.VK_4:
-				(engine.getRenderSystem().getViewport("LEFT").getCamera()).setLocation(new Vector3f(0,0,0));
-				break;
-			case KeyEvent.VK_5:
-				(engine.getRenderSystem().getViewport("LEFT").getCamera()).setLocation(new Vector3f(0,0,5));
-				break;
-			case KeyEvent.VK_8: // Press 8 to toggle skybox
+			// *** GAME CONTROLS AND DEBUGGING KEYS ***
+			case KeyEvent.VK_ESCAPE: // Press Escape to exit the game
+            	System.exit(0);
+            	break;
+			case KeyEvent.VK_8:	// Press 8 to toggle skybox
             	boolean isEnabled = (engine.getSceneGraph()).isSkyboxEnabled();
             	(engine.getSceneGraph()).setSkyBoxEnabled(!isEnabled);
             	break;
-			case KeyEvent.VK_9:
-				chessMovement = !chessMovement;
-				break;
-			case KeyEvent.VK_0:
+			case KeyEvent.VK_0: // Press 0 to cycle through player pieces
 				if (id == 15) {id = 0;}
 				else {id++;}
 				avatar = playerPieces[id];
 				break;
-			
-			//PHYSICS CONTROLS
-			case KeyEvent.VK_2:
+
+			// *** PHYSICS TOGGLES - MILESTONE 2 ***
+			case KeyEvent.VK_2: // Press 2 to enable physics controls
 				running = !running;
 				break;
-			case KeyEvent.VK_3:
+			case KeyEvent.VK_3: // Press 3 to toggle physics rendering
 				if(!physicsRenderingOn){engine.enablePhysicsWorldRender();}
 				else{engine.disablePhysicsWorldRender();}
 				physicsRenderingOn = !physicsRenderingOn;
 				break;
+			case KeyEvent.VK_9: // Press 9 to toggle chess piece movement mode (for testing physics)
+				chessMovement = !chessMovement;
+				break;
 
-			// ---- MILESTONE 2: ANIMATION TRIGGERS ----
+			// *** ANIMATION TRIGGERS - MILESTONE 2 ***
         	case KeyEvent.VK_V: // Red King: Wave Sword
             	if (redKing != null) 
 				{
@@ -1014,6 +1004,10 @@ public class MyGame extends VariableFrameRateGame
             	if (redKing != null) {redKing.stopAction();}
             	if (blueKing != null) {blueKing.stopAction();}
             	break;
+			
+			// *** REMOVED *** 
+			// case KeyEvent.VK_C: counter++; break; // Press C to increment counter (from professor's template)
+			// case KeyEvent.VK_1: paused = !paused; break; // Press 1 to toggle pause (From Professor's template)
 		}
 		super.keyPressed(e);
 	}

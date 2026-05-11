@@ -20,54 +20,49 @@ public class FwdAction extends AbstractInputAction
 
     @Override
     public void performAction(float time, Event e)
-    { 
+    {
         float keyValue = e.getValue();
-        if (keyValue > -.05 && keyValue < .05) return; // deadzone
-
         String componentName = e.getComponent().getIdentifier().getName();
-
-        // INPUT LOGIC 
-        if (componentName.equalsIgnoreCase("S")) {
-            keyValue = -1.0f; // Force S key to move backwards
-        } else if (e.getComponent().isAnalog()) {
-            keyValue = -keyValue; // Invert stick if 'Forward' was moving you 'Backward'
-        }
-        
-        // Time-based movement scaling for consistent speed across different frame rates
-        float speed = 15.0f;
-        float moveAmount = speed * keyValue * (time / 1000.0f); // scale the movement amount
 		
-		if(!game.getIsGameDone())
-		{
-			if(game.getChessM())
-			{
-				if(game.getRunning())
-				{			
-					game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x(), 
-					5f, game.getAvatar().getPhysicsObject().getLocation().z() + 5f*keyValue}));
-				}
-				else
-				{	
-					game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x(), 
-					game.getAvatar().getPhysicsObject().getLocation().y(), game.getAvatar().getPhysicsObject().getLocation().z() + 5f*keyValue}));
-					game.getAvatar().setLocalTranslation((game.getAvatar().getWorldTranslation()).translate(0f, 0f, 5f*keyValue));
-				}
-					
-			}
-			else {
-				// 1. Access the TAGE camera
-				Camera cam = game.getEngine().getRenderSystem().getViewport("LEFT").getCamera();
-				// 2. Store the camera's current position
-				Vector3f oldCamPos = cam.getLocation();
-				// 3. Get the camera's forward direction (N vector)
-				Vector3f fwd = new Vector3f(cam.getN());
-				// 4. Scale the forward vector by the movement amount
-				fwd.mul(moveAmount);
-				// 5. Add the scaled forward vector to the camera's current position to get the new position
-				newPosition = oldCamPos.add(fwd);
-				// 6. Set the camera's position to the new position
-				cam.setLocation(newPosition);
-			}
+		// Check if the input is from a keyboard key
+		boolean isKeyboard = e.getComponent().getIdentifier() instanceof net.java.games.input.Component.Identifier.Key;
+		
+		// 1. Deadzone check: Only apply to sticks, not keyboard
+        if (!isKeyboard && java.lang.Math.abs(keyValue) < 0.2f) return;
+		
+		// Determine direction and movement type
+    	float finalMove;
+        if (isKeyboard) {
+            // Keyboard Logic: S is back, everything else (W) is forward
+            float direction = componentName.equalsIgnoreCase("S") ? -1.0f : 1.0f;
+            finalMove = 5.0f * direction;
+        } else {
+            // Analog Stick Logic (Continuous movement)
+            float speed = 2.0f;
+            // Note: keyValue usually needs to be negated for forward/back sticks
+            float stickValue = -keyValue; 
+            finalMove = speed * stickValue * (time / 1000.0f);
+        }
+
+		if (!game.getIsGameDone()) {
+        	if (game.getChessM()) {
+            	Vector3f currentPhysLoc = game.getAvatar().getPhysicsObject().getLocation();
+            
+            	// Use finalMove instead of moveAmount or 5f
+            	float newZ = currentPhysLoc.z() + finalMove;
+
+            	if (game.getRunning()) {
+                	game.getAvatar().getPhysicsObject().setLocation(new float[]{currentPhysLoc.x(), 5f, newZ});
+            	} else {
+                	game.getAvatar().getPhysicsObject().setLocation(new float[]{currentPhysLoc.x(), currentPhysLoc.y(), newZ});
+                	game.getAvatar().setLocalTranslation(game.getAvatar().getWorldTranslation().translate(0f, 0f, finalMove));
+            	}
+        	} else {
+            	// Standard camera movement
+            	Camera cam = game.getEngine().getRenderSystem().getViewport("LEFT").getCamera();
+            	Vector3f fwd = new Vector3f(cam.getN()).mul(finalMove);
+            	cam.setLocation(cam.getLocation().add(fwd));
+        	}
 
 			//protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
 		}
