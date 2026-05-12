@@ -556,9 +556,13 @@ public class MyGame extends VariableFrameRateGame
 		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.DOWN, 
     		pitchAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 
-		// Register Space Bar to complete the game
+		// Register Space Bar to complete a turn
 		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.SPACE, 
     		spaceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+		// Register Gamepad Button 3 (Y on Xbox controller) to complete a turn
+		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._3, 
+			spaceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);	
+
 
 		// Register G key to toggle axes visibility
 		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.G, 
