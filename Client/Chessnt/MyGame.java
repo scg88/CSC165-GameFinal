@@ -42,7 +42,7 @@ public class MyGame extends VariableFrameRateGame
 
 	private boolean paused=false;
 	private boolean isRiding = true; // Start the game on the dolphin
-	private String hudMessage = "Welcome to the CSC165 Final Project! Press the 'Y Button' to jump!";
+	private String hudMessage = "Welcome to CHESSNT - the CSC165 Final Project!";
 	private boolean axesVisible = true;
 	
 	private boolean isGameOver = false; // Game over condition
@@ -503,6 +503,7 @@ public class MyGame extends VariableFrameRateGame
 		JumpAction jumpAction = new JumpAction(this);
 		ToggleAxesAction toggleAxesAction = new ToggleAxesAction(this);
 		ChessMoveAction chessMoveAction = new ChessMoveAction(this);
+		SelectPieceAction selectPieceAction = new SelectPieceAction(this);
 
 		// Controller mappings (using JInput identifiers for an 8BitDo SN30 pro+ controller)
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._1,
@@ -513,8 +514,10 @@ public class MyGame extends VariableFrameRateGame
 			fwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._0, 
 			takePhotoAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+
+		/*//REMOVED JUMP from A2
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._3, 
-    		jumpAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+    		jumpAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY); */
 		
 
 		// KEYBOARD MAPPINGS
@@ -564,6 +567,15 @@ public class MyGame extends VariableFrameRateGame
 		// Register D-Pad support for movement
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Axis.POV, 
     		chessMoveAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+
+		// Register '0' to cycle through game pieces
+    	im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key._0, 
+			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+    	// Register Right Bumper to cycle through game pieces
+        im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._5, 
+			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+    
+
 
 			//Room for more mappings...
 		//keeping keyPressed class for WASD as of now, but can easily move to Action classes if desired
@@ -692,6 +704,11 @@ public class MyGame extends VariableFrameRateGame
 
 	public Sound getWelcomeSound() { return welcomeSound; }
 	public Sound getGameLoopSound() { return gameLoopSound; }
+
+	public int getSelectedId() { return id; }
+	public void setSelectedId(int newId) { this.id = newId; }
+	public GameObject[] getPlayerPieces() { return playerPieces; }
+	public void setAvatar(GameObject newAvatar) { this.avatar = (ChessPiece) newAvatar; }
 	
 	public boolean getIsGameDone()
 	{
@@ -980,11 +997,6 @@ public class MyGame extends VariableFrameRateGame
             	boolean isEnabled = (engine.getSceneGraph()).isSkyboxEnabled();
             	(engine.getSceneGraph()).setSkyBoxEnabled(!isEnabled);
             	break;
-			case KeyEvent.VK_0: // Press 0 to cycle through player pieces
-				if (id == 15) {id = 0;}
-				else {id++;}
-				avatar = playerPieces[id];
-				break;
 
 			// *** PHYSICS TOGGLES - MILESTONE 2 ***
 			case KeyEvent.VK_2: // Press 2 to enable physics controls
