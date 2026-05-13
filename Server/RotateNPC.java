@@ -1,7 +1,7 @@
 //import Chessnt.MyGame;
 import tage.ai.behaviortrees.BTAction;
 import tage.ai.behaviortrees.BTStatus;
-import tage.audio.Sound;
+//import tage.audio.Sound;
 
 public class RotateNPC extends BTAction {
     private NPC npc;
@@ -33,6 +33,15 @@ public class RotateNPC extends BTAction {
         // Update the NPC's logical angle
         npc.setYAngle(npc.getYAngle() + frameRotation);
         degreesRotated += frameRotation;
+
+        // --- Update 3D Sound Position ---
+        // Make sure the sound source moves with the NPC's world position
+        if (npc.getWelcomeSound() != null) {
+            npc.getWelcomeSound().setLocation(npc.getWorldLocation());
+        }
+        if (npc.getGameLoopSound() != null) {
+            npc.getGameLoopSound().setLocation(npc.getWorldLocation());
+        }
 
         // Once we hit 1440, reset for next time and return success
         if (degreesRotated >= 720f) {

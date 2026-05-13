@@ -86,6 +86,8 @@ public class MyGame extends VariableFrameRateGame
 	private GameObject npc;
 	private TextureImage npcTx;
 	private ObjShape npcS;
+	private GameObject npcObj;
+	private NPC npcLogic;
 
 	public ObjShape getNPCshape() { return npcS; }
 	public TextureImage getNPCtexture() { return npcTx; }
@@ -373,6 +375,10 @@ public class MyGame extends VariableFrameRateGame
 		npc.setLocalScale((new Matrix4f()).scaling(1.0f));
 		npc.setLocalRotation((new Matrix4f()).rotationY((float) Math.toRadians(90.0f)));
 		npc.getRenderStates().hasLighting(true);
+		npcLogic = new NPC(); 
+		npcLogic.setShape(npc); // 'npc' is your GameObject
+		npcLogic.setWelcomeSound(welcomeSound);
+		npcLogic.setGameLoopSound(gameLoopSound);
 
 		// Build the Coordinate Axes so you can see X, Y, and Z
 		x = new GameObject(GameObject.root(), linxS);
@@ -637,7 +643,7 @@ public class MyGame extends VariableFrameRateGame
 	@Override
 	public void loadSounds()
 	{
-		AudioResource resource1, resource2;
+		AudioResource resource1, resource2, resLoop;
 		audioMgr = engine.getAudioManager();
 		
 		
@@ -651,18 +657,18 @@ public class MyGame extends VariableFrameRateGame
 
 		// Welcome Message Sound Source: Created in Reason13 by Spencer Green
 		resource2 = audioMgr.createAudioResource("WelcomeToChessnt.wav", AudioResourceType.AUDIO_SAMPLE);
-    	welcomeSound = new Sound(resource2, SoundType.SOUND_EFFECT, 70, false);
+    	welcomeSound = new Sound(resource2, SoundType.SOUND_EFFECT, 90, false);
    		welcomeSound.initialize(audioMgr);
-		welcomeSound.setMaxDistance(15.0f);
-    	welcomeSound.setMinDistance(0.5f);
-    	welcomeSound.setRollOff(5.0f);
+		welcomeSound.setMaxDistance(40.0f);
+		welcomeSound.setMinDistance(20.0f);
+		welcomeSound.setRollOff(3.0f);
 
-		AudioResource resLoop = audioMgr.createAudioResource("GameLoop_S.wav", AudioResourceType.AUDIO_SAMPLE);
-    	gameLoopSound = new Sound(resLoop, SoundType.SOUND_EFFECT, 50, false); // true = looping
+		resLoop = audioMgr.createAudioResource("GameLoop.wav", AudioResourceType.AUDIO_SAMPLE);
+    	gameLoopSound = new Sound(resLoop, SoundType.SOUND_EFFECT, 80, false); 
     	gameLoopSound.initialize(audioMgr);
-		gameLoopSound.setMaxDistance(15.0f);
-		gameLoopSound.setMinDistance(0.5f);
-		gameLoopSound.setRollOff(5.0f);
+		gameLoopSound.setMaxDistance(40.0f);
+		gameLoopSound.setMinDistance(20.0f);
+		gameLoopSound.setRollOff(3.0f);
 		
 	}
 	
@@ -728,6 +734,16 @@ public class MyGame extends VariableFrameRateGame
 		currFrameTime = System.currentTimeMillis();
 		float deltaTime = (float) (currFrameTime - lastFrameTime);
     	if (!paused) elapsTime += deltaTime / 1000.0;
+
+		if (npc != null && npcLogic != null) {
+        	Vector3f npcLoc = npc.getWorldLocation();
+        	if (welcomeSound != null) {
+            	welcomeSound.setLocation(npcLoc);
+        	}
+        	if (gameLoopSound != null) {
+            	gameLoopSound.setLocation(npcLoc);
+       		}
+    	}
 
 		setEarParameters(); // Update ear parameters for 3D sound each frame
 

@@ -30,7 +30,7 @@ public class CameraOrbit3D {
         camera = cam;
         avatar = av;
         cameraAzimuth = 0.0f;     // Start directly behind
-        cameraElevation = 20.0f;  // Start slightly above
+        cameraElevation = 40.0f;  // Start slightly above
         cameraRadius = 3.5f;      // Default zoom distance
         
         setupInputs(gpName);

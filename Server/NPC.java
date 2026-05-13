@@ -1,3 +1,7 @@
+import tage.GameObject;
+import tage.audio.Sound;
+import org.joml.Vector3f;
+
 public class NPC {
     double locationX, locationY, locationZ;
     private double xDir = 0.2;  // Speed along X
@@ -6,6 +10,11 @@ public class NPC {
     private boolean isSteppingZ = false;
     double size = 1.0;
     private float yAngle = 0.0f;
+
+    private GameObject npcShape;
+
+    private Sound welcomeSound;
+    private Sound gameLoopSound;
 
     private boolean isNearLastFrame = false;
 
@@ -20,6 +29,23 @@ public class NPC {
     public float getYAngle() {
         return yAngle;
     }
+
+    public void setWelcomeSound(Sound s) { welcomeSound = s; }
+    public Sound getWelcomeSound() { return welcomeSound; }
+
+    public void setGameLoopSound(Sound s) { gameLoopSound = s; }
+    public Sound getGameLoopSound() { return gameLoopSound; }
+
+    public GameObject getShape() { return npcShape; }
+    public void setShape(GameObject s) { npcShape = s; }
+
+    public Vector3f getWorldLocation() {
+        if (npcShape != null) {
+            return npcShape.getWorldLocation();
+        }
+        return new Vector3f((float)locationX, (float)locationY, (float)locationZ);
+    }
+
 
     public void setYAngle(float angle) {
         this.yAngle = angle % 360.0f;
