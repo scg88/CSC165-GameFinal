@@ -21,9 +21,6 @@ public class SpaceBarAction extends AbstractInputAction {
     public void performAction(float time, Event e) {
         // Only trigger on key press (value > 0.5)
         if (e.getValue() < 0.5f) return;
-
-        // Neutralized for Final Project cleanup
-        game.setHUDMessage("Space Bar Pressed - Ready for Chess logic!");
 		
 		if(!game.getIsGameDone())
 		{
@@ -32,13 +29,21 @@ public class SpaceBarAction extends AbstractInputAction {
 				move = game.getBoard().movePlayerPiece(game.getAvatar());
 				if (move)
 				{
+					game.setHUDMessage("Move confirmed!");
+
+					// Send move message to server and update avatar position
 					protClient.sendMoveMessage(game.getAvatar().getWorldLocation(), game.getPieceId());
 					game.getAvatar().getPhysicsObject().setLocation((new float[]{game.getAvatar().getPhysicsObject().getLocation().x(),
 					game.getAvatar().getPhysicsObject().getLocation().y()+5f, game.getAvatar().getPhysicsObject().getLocation().z()}));
 					game.setRunning(true);
 					//game.toggleTurn();
 					//System.out.println("Value is: " + game.getTurn());
+					
+				} else {
+					game.setHUDMessage("Invalid move. Try again.");
 				}
+			} else {
+				game.setHUDMessage("Not your turn! Please wait.");
 			}
 		}
     }

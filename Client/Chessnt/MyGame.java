@@ -42,7 +42,7 @@ public class MyGame extends VariableFrameRateGame
 
 	private boolean paused=false;
 	private boolean isRiding = true; // Start the game on the dolphin
-	private String hudMessage = "Welcome to CHESSNT - the CSC165 Final Project!";
+	private String hudMessage = "Welcome to CHESSNT! Press (Y) or (SPACE) on the grass tile to confirm a move!";
 	private boolean axesVisible = true;
 	
 	private boolean isGameOver = false; // Game over condition
@@ -207,7 +207,7 @@ public class MyGame extends VariableFrameRateGame
 		hills = new TextureImage("hills2.jpg"); // This is your grayscale height map
 
 		// Desert texture from Polyhaven - https://polyhaven.com/a/mud_cracked_dry_03
-    	grass = new TextureImage("mud_cracked_dry_03.jpg"); // This is what the ground actually looks like
+    	grass = new TextureImage("mud_cracked_dry_02.jpg"); // This is what the ground actually looks like
 		boardT = new TextureImage("GroundTxt.jpg");
 		
 		//Tiles texture
@@ -498,7 +498,10 @@ public class MyGame extends VariableFrameRateGame
 		lastFrameTime = System.currentTimeMillis();
 		currFrameTime = System.currentTimeMillis();
 		elapsTime = 0.0;
+		
 		(engine.getRenderSystem()).setWindowDimensions(1900,1000);
+		
+		(engine.getHUDmanager()).setHUD1font(2);
 		
 		setupNetworking();
 		
@@ -516,38 +519,38 @@ public class MyGame extends VariableFrameRateGame
 		FwdAction fwdAction = new FwdAction(this, protClient);
 		TurnAction turnAction = new TurnAction(this, protClient);
 		PitchAction pitchAction = new PitchAction(this);
-		TakePhotoAction takePhotoAction = new TakePhotoAction(this);
 		SpaceBarAction spaceAction = new SpaceBarAction(this, protClient);
 		JumpAction jumpAction = new JumpAction(this);
 		ToggleAxesAction toggleAxesAction = new ToggleAxesAction(this);
 		ChessMoveAction chessMoveAction = new ChessMoveAction(this);
 		SelectPieceAction selectPieceAction = new SelectPieceAction(this);
 
-		// Controller mappings (using JInput identifiers for an 8BitDo SN30 pro+ controller)
-		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._1,
-			fwdAction,InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+		// CONTROLLER MAPPINGS (using JInput identifiers for an 8BitDo SN30 pro+ controller)
+		// Register movement with left joystick (Axis X and Y)
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Axis.X, 
 			turnAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Axis.Y, 
 			fwdAction, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
-		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._0, 
-			takePhotoAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 
-		/*//REMOVED JUMP from A2
+		// Register Gamepad Button 3 (Y on Xbox controller) to complete a turn
 		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._3, 
-    		jumpAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY); */
-		
+			spaceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);	
+
+		// Register D-Pad support for movement
+		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Axis.POV, 
+    		chessMoveAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+
+		// Register Right Bumper to cycle through game pieces
+        im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._5, 
+			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 
 		// KEYBOARD MAPPINGS
-		// Register Photo Key (P)
-		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.P, 
-			takePhotoAction,InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-
 		// Register Viewport Zoom Keys (Q and E)
     	im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.Q, 
         	zoomOverhead, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
     	im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.E, 
         	zoomOverhead, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
+
 		// Register Viewport Pan Keys (I, K, J, L)
     	im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.I, 
         	panOverhead, InputManager.INPUT_ACTION_TYPE.REPEAT_WHILE_DOWN);
@@ -577,28 +580,15 @@ public class MyGame extends VariableFrameRateGame
 		// Register Space Bar to complete a turn
 		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.SPACE, 
     		spaceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-		// Register Gamepad Button 3 (Y on Xbox controller) to complete a turn
-		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._3, 
-			spaceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);	
-
 
 		// Register G key to toggle axes visibility
 		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.G, 
 			toggleAxesAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 
-		// Register D-Pad support for movement
-		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Axis.POV, 
-    		chessMoveAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-
 		// Register '0' to cycle through game pieces
     	im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key._0, 
 			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-    	// Register Right Bumper to cycle through game pieces
-        im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._5, 
-			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
-    
-
-
+    	
 			//Room for more mappings...
 		//keeping keyPressed class for WASD as of now, but can easily move to Action classes if desired
 		
@@ -768,21 +758,32 @@ public class MyGame extends VariableFrameRateGame
     	orbitController.updateCameraPosition(avatar);
 		
 		processNetworking((float)elapsTime);
-	
-		// GAME OVER LOGIC - stop updating game logic
-    	if (isGameOver) {
-			im = engine.getInputManager();
-    		im.update(deltaTime);
-			System.out.println("Game Over; You Lose.");
-			return; 
-    	}
 
-		// GAME WIN LOGIC - stop updating game logic and show win message
-		if (isGameWon) {
-			im = engine.getInputManager();
-    		im.update(deltaTime);
-			System.out.println("Game Over; You Win.");
-			return; 
+		String displayMsg;
+    	Vector3f hudColor;
+	
+		// GAME OVER / WIN LOGIC - stop updating game logic
+    	if (isGameOver) {
+			displayMsg = "Game Over; You Lose!";
+			hudColor = new Vector3f(1.0f, 0.0f, 0.0f);
+		// GAME WIN condition (capture king)
+    	} else if (isGameWon) {
+			displayMsg = "Game Over; You Win!";
+			hudColor = new Vector3f(1.0f, 1.0f, 0.0f);
+		// Normal gameplay - show elapsed time and any HUD messages
+		} else {
+        	int elapsTimeSec = Math.round((float)elapsTime);
+        	displayMsg = hudMessage + "  | Time: " + elapsTimeSec;
+        	hudColor = new Vector3f(0.0f, 1.0f, 0.0f); // Your current Green
+    	} 
+
+		(engine.getHUDmanager()).setHUD1(displayMsg, hudColor, 15, 15);
+
+		if (isGameOver || isGameWon) {
+        // Just process networking and basic input, then return
+        im.update(deltaTime);
+        processNetworking((float)elapsTime);
+        return; 
 		// MAIN GAME LOGIC - updates only happen if the game isn't won or lost yet
 		} else {
 			Vector3f loc = avatar.getWorldLocation();
@@ -795,7 +796,6 @@ public class MyGame extends VariableFrameRateGame
 			avatar.setLocalLocation(new Vector3f(loc.x, loc.y + vertVel, loc.z));
 
 			// DATA CALCULATION FOR HUD
-			int elapsTimeSec = Math.round((float)elapsTime);
 			// Get current window dimensions for relative positioning
 			int windowWidth = engine.getRenderSystem().getWidth();
 			int windowHeight = engine.getRenderSystem().getHeight();
@@ -805,8 +805,8 @@ public class MyGame extends VariableFrameRateGame
         	int hud2Y = 15; // Bottom of the overhead viewport
 
 			// --- HUD 1: MAIN VIEWPORT (Bottom Left) ---
-			String mainDisp = " Time: " + elapsTimeSec + " | " + hudMessage;
-        	(engine.getHUDmanager()).setHUD1(mainDisp, new Vector3f(1,1,1), 15, 15);
+			//String mainDisp = hudMessage + "  | Time: " + elapsTimeSec;
+        	//(engine.getHUDmanager()).setHUD1(mainDisp, new Vector3f(0.0f, 1.0f, 0.0f), 15, 15);
 			
 			// --- HUD 2: OVERHEAD VIEWPORT (Relative to Right Window) ---
         	Vector3f pos = avatar.getWorldLocation();
