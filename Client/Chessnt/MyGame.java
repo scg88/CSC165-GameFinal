@@ -86,9 +86,11 @@ public class MyGame extends VariableFrameRateGame
 	private GameObject npc;
 	private TextureImage npcTx;
 	private ObjShape npcS;
-	private GameObject npcObj;
 	private NPC npcLogic;
 
+	private GameObject npcPlanet; // Child node for requirement
+	private TextureImage planetTx;
+	
 	public ObjShape getNPCshape() { return npcS; }
 	public TextureImage getNPCtexture() { return npcTx; }
 	public GameObject getNPC() { return npc; }
@@ -197,6 +199,8 @@ public class MyGame extends VariableFrameRateGame
 	@Override
 	public void loadTextures()
 	{	
+
+		// Ghost NPC texture (for MILESTONE 2)
 		ghostT = new TextureImage("redDolphin.jpg");
 
 		// Game Textures
@@ -222,8 +226,9 @@ public class MyGame extends VariableFrameRateGame
 		bishoptxRed = new TextureImage("RedBishop_v2.jpg"); // Texture for the bishop piece
 		bishoptxBlue = new TextureImage("BlueBishop_v2.jpg");
 
-		// MILESTONE 2 - NPC Texture
+		// MILESTONE 2 - NPC Textures
 		npcTx = new TextureImage("NPCtx.jpg");
+		planetTx = new TextureImage("PlanetTx_03.jpg"); // Child node texture (requirement)
 		
 		selectorT = new TextureImage("selector.png");
 	}
@@ -379,6 +384,13 @@ public class MyGame extends VariableFrameRateGame
 		npcLogic.setShape(npc); // 'npc' is your GameObject
 		npcLogic.setWelcomeSound(welcomeSound);
 		npcLogic.setGameLoopSound(gameLoopSound);
+
+		// Build NPC's child node (requirement)
+		npcPlanet = new GameObject(npc, ghostS, planetTx); // Parent is 'npc', shape is a sphere, texture is planetTx
+		npcPlanet.setLocalTranslation((new Matrix4f()).translation(2.0f, 2.0f, 0.0f));
+		npcPlanet.setLocalScale((new Matrix4f()).scaling(0.3f));
+    	npcPlanet.getRenderStates().hasLighting(true);
+
 
 		// Build the Coordinate Axes so you can see X, Y, and Z
 		x = new GameObject(GameObject.root(), linxS);
@@ -970,6 +982,20 @@ public class MyGame extends VariableFrameRateGame
         		light3.setLocation(new Vector3f(0f, -100f, 0f));
     		}
 		}
+
+		// This rotates the planet's position around the NPC
+		if (npc != null && npcPlanet != null) {
+    		double orbitSpeed = elapsTime * 1.5; // Adjust for speed
+			float radius = 2.5f; // Distance from NPC
+
+			float x = (float) Math.cos(orbitSpeed) * radius;
+			float z = (float) Math.sin(orbitSpeed) * radius;
+
+			// Update the planet's location relative to the NPC parent
+			npcPlanet.setLocalLocation(new Vector3f(x, 1.0f, z));
+			npcPlanet.setLocalRotation(new Matrix4f().rotationY((float)orbitSpeed));
+		}
+
 	}
 
 	// VIEWPORT ZOOM - as per prompt

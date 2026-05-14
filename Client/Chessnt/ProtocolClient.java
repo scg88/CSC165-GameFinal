@@ -29,7 +29,13 @@ public class ProtocolClient extends GameConnectionClient
 	
 	@Override
 	protected void processPacket(Object message)
-	{	String strMessage = (String)message;
+	{	
+		if (message == null) return; // Ignore null messages
+
+		String strMessage = (String)message;
+
+    	if (strMessage.isEmpty()) return; // Ignore empty messages
+
 		//System.out.println("message received -->" + strMessage);
 		String[] messageTokens = strMessage.split(",");
 		
@@ -39,7 +45,10 @@ public class ProtocolClient extends GameConnectionClient
 			// Handle JOIN message
 			// Format: (join,success) or (join,failure)
 			if(messageTokens[0].compareTo("join") == 0)
-			{	if(messageTokens[1].compareTo("success") == 0)
+			{	
+				if (messageTokens.length < 3) return; // Ensure we have enough tokens to avoid ArrayIndexOutOfBounds
+
+				if(messageTokens[1].compareTo("success") == 0)
 				{	System.out.println("join success confirmed");
 					game.setIsConnected(true);
 					sendCreateMessage(game.getPlayerPosition());
