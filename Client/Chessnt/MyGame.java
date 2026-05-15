@@ -788,12 +788,17 @@ public class MyGame extends VariableFrameRateGame
 		} else {
 			Vector3f loc = avatar.getWorldLocation();
 
-			// TERRAIN SNAP LOGIC
-			// Get the actual height of the terrain at this specific (x, z)
-    		float groundHeight = terr.getHeight(loc.x, loc.z);
-			//float dolphinOffset = 0.8f; // Offset to keep dolphin above ground.
-			float adjustedHeight = groundHeight /*+ dolphinOffset*/;
-			avatar.setLocalLocation(new Vector3f(loc.x, loc.y + vertVel, loc.z));
+			
+			if (!running)
+			{
+				// TERRAIN SNAP LOGIC
+				// Get the actual height of the terrain at this specific (x, z)
+				float groundHeight = terr.getHeight(loc.x, loc.z);
+				//float dolphinOffset = 0.8f; // Offset to keep dolphin above ground.
+				float adjustedHeight = groundHeight /*+ dolphinOffset*/;
+				avatar.setLocalLocation(new Vector3f(loc.x,adjustedHeight, loc.z));
+				avatar.getPhysicsObject().setLocation((new float[]{loc.x, adjustedHeight, loc.z}));
+			}
 
 			// DATA CALCULATION FOR HUD
 			// Get current window dimensions for relative positioning
