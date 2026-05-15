@@ -511,7 +511,7 @@ public class MyGame extends VariableFrameRateGame
 		Camera cam = engine.getRenderSystem().getViewport("LEFT").getCamera();
 		
 		// ---A2 REQUIREMENT: Create the CameraOrbit3D controller and associate it with the avatar and camera ---
-		orbitController = new CameraOrbit3D(cam, avatar, gpName, engine, 0f, 20f, 6.5f);
+		orbitController = new CameraOrbit3D(cam, avatar, gpName, engine, 0f, 45f, 6.5f);
 		
 		// Instantiate the actions
     	ZoomOverheadAction zoomOverhead = new ZoomOverheadAction();
@@ -542,6 +542,8 @@ public class MyGame extends VariableFrameRateGame
 
 		// Register Right Bumper to cycle through game pieces
         im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._5, 
+			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+		im.associateActionWithAllGamepads(net.java.games.input.Component.Identifier.Button._4, 
 			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 
 		// KEYBOARD MAPPINGS
@@ -586,7 +588,9 @@ public class MyGame extends VariableFrameRateGame
 			toggleAxesAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
 
 		// Register '0' to cycle through game pieces
-    	im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key._0, 
+    	im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.RIGHT, 
+			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
+		im.associateActionWithAllKeyboards(net.java.games.input.Component.Identifier.Key.LEFT, 
 			selectPieceAction, InputManager.INPUT_ACTION_TYPE.ON_PRESS_ONLY);
     	
 			//Room for more mappings...
