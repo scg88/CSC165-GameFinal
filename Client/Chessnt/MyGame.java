@@ -309,16 +309,16 @@ public class MyGame extends VariableFrameRateGame
 		}
 		
 		//Build the red king piece
-		redKing = new ChessPiece(14, "King", "e8", kingSRed, kingtxRed);
-		redKing.setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, 17.5f));
+		redKing = new ChessPiece(14, "King", "d8", kingSRed, kingtxRed);
+		redKing.setLocalTranslation((new Matrix4f()).translation(2.5f, 0f, 17.5f));
 		redKing.setLocalScale((new Matrix4f()).scaling(1.0f));
 		redKing.getRenderStates().hasLighting(true);
 		redKing.setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
 		opponentPieces[14] = redKing;
 		
 		//Build the red queen piece
-		opponentPieces[15] = new ChessPiece(15, "Queen", "d8", queenS, queentxRed);
-		opponentPieces[15].setLocalTranslation((new Matrix4f()).translation(2.5f, 0f, 17.5f));
+		opponentPieces[15] = new ChessPiece(15, "Queen", "e8", queenS, queentxRed);
+		opponentPieces[15].setLocalTranslation((new Matrix4f()).translation(-2.5f, 0f, 17.5f));
 		opponentPieces[15].setLocalScale((new Matrix4f()).scaling(1.0f));
 		opponentPieces[15].getRenderStates().hasLighting(true);
 		opponentPieces[15].setLocalRotation((new Matrix4f()).rotationY((float)Math.toRadians(180f)));
