@@ -797,7 +797,7 @@ public class MyGame extends VariableFrameRateGame
 				//float dolphinOffset = 0.8f; // Offset to keep dolphin above ground.
 				float adjustedHeight = groundHeight /*+ dolphinOffset*/;
 				avatar.setLocalLocation(new Vector3f(loc.x,adjustedHeight, loc.z));
-				avatar.getPhysicsObject().setLocation((new float[]{loc.x, adjustedHeight, loc.z}));
+				avatar.getPhysicsObject().setLocation((new float[]{loc.x, adjustedHeight+1.25f, loc.z}));
 			}
 
 			// DATA CALCULATION FOR HUD
@@ -921,6 +921,7 @@ public class MyGame extends VariableFrameRateGame
 										{
 											if(piece.getPhysicsObject() == po)
 											{
+												piece.setAlive(false);
 												piece.getRenderStates().disableRendering();
 												screamSound.setLocation(piece.getWorldLocation());
 												setEarParameters();
@@ -930,9 +931,12 @@ public class MyGame extends VariableFrameRateGame
 											(engine.getSceneGraph()).removePhysicsObject(po);
 											if(piece == avatar)
 											{
-												if (id == 15) {id = 0;}
-												else {id++;}
-												avatar = playerPieces[id];
+												do
+												{
+													if (id == 15) {id = 0;}
+													else {id++;}
+													avatar = playerPieces[id];
+												} while(avatar.getAlive() == false);
 											}
 										}
 									}

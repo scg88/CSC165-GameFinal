@@ -11,6 +11,7 @@ public class ChessPiece extends GameObject
 	String pieceType;
 	String CNpos;
 	private AnimatedShape animatedShape; // Store the animation reference
+	private boolean alive = true;
 	
 	public ChessPiece(int id, String type, String startPos, ObjShape s, TextureImage t)
 	{
@@ -56,6 +57,9 @@ public class ChessPiece extends GameObject
 	
 	public String getCNPos(){return CNpos;}
 	public void setCNPos(String newPos){CNpos = newPos;}
+	
+	public boolean getAlive(){return alive;}
+	public void setAlive(boolean status){alive = status;}
 
 	// Check if this piece is even capable of animating
     public boolean isAnimated() { return animatedShape != null; }
